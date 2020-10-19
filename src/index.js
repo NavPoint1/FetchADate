@@ -1,5 +1,7 @@
 let body
 let main
+let currentUser
+let myCharacters = []
 
 document.addEventListener("DOMContentLoaded", () => {
     //global variables 
@@ -92,10 +94,127 @@ const handleSignUp = (event) => {
         })
     }
     fetch("http://localhost:3000/users", requestPackage)
-        //.then(resp => (resp).json()) //do we need user id? 
-        .then(renderCharacterIndex)
+        .then(resp => resp.json()) 
+        .then(loggedInUser => {
+            currentUser = loggedInUser
+            fetchCharacters()
+        })
 
 }
-const renderCharacterIndex = () => {
+
+const fetchCharacters = () => {
+    
+    fetch("http://localhost:3000/characters")
+        .then(resp => resp.json())
+        .then(characters => renderCharacterIndex(characters))
+}
+
+
+const renderCharacterIndex = (characters) => {
+    main.innerHTML = ""
+    let ul = document.createElement("ul")
+    main.append(ul)
+    ul.id = "character-list"
+    characters.forEach(character => {
+        renderCharacterIndexItem(character, ul)
+    })
+}
+
+const renderCharacterIndexItem = (character, ul) => {
+    let li = document.createElement("li")
+    ul.append(li)
+    li.innerText = character.name
+    li.addEventListener("click", () => {
+        renderCharacterShow(character)
+    })
+}
+
+const renderCharacterShow = (character) => {
+    // clear screen
+    main.innerHTML = ""
+    let firstMeeting = false
+    // if first time meeting...
+    if(!myCharacters.includes(character)){
+        meetCharacter(character)
+        firstMeeting = true
+    }
+
+    //display character
+    let name = document.createElement("div")
+    name.innerText = character.name
+    let pic = document.createElement("img")
+    pic.src = character.picture_url
+
+    //dialogue
+    let dialoguePrompt = document.createElement("div")
+
+    let dialogueArray = characterDialogue(character.interest)
+
+    if(firstMeeting) {
+        dialoguePrompt.innerText = "Nice to meet you. " + dialogueArray[0]
+    }
+    else {
+        dialoguePrompt.innerText = dialogueArray[0]
+    }
+    let i = 1
+    while(i < dialogueArray.length - 2) {
+        renderDialogueOptions(i, dialogueArray)
+        i++
+    }
+    main.append(name, pic, dialoguePrompt)
+}
+
+const meetCharacter = (character) => {
+    
+    // fetch post request to build a relationship
+    fetch("http://localhost:3000/relationships", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+                user_id: currentUser.id,
+                character_id: character.id
+        })
+    })
+        .then(myCharacters.push(character))
+}
+
+const characterDialogue = (interest) => {
+    switch(interest) {
+        case "Marine Biology":
+            return [
+                "Avast ye landlubber!",
+                "Tis a beautiful day for sailin",
+                "lets go drink",
+                "lets go steal",
+                "Walk away",
+                1
+            ]
+            break;
+        case "Pop Culture":
+            return ""
+            break;
+        case "Zodiac":
+            return ""
+            break;
+        default:
+            //code
+    }
+}
+
+const renderDialogueOptions = (i, dialogueArray) => {
+    let div = document.createElement("div")
+    div.innerText = dialogueArray[i]
+    main.append(div)
+    div.addEventListener("click", () => {
+        if(i == dialogueArray[5]){
+            correctAnswer()
+        }
+        else {
+            wrongAnswer()
+        }
+    })
+}
+
+const correctAnswer = () => {
 
 }
