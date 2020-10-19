@@ -2,12 +2,13 @@ let body
 let main
 let currentUser
 let myCharacters = []
+let navBar
 
 document.addEventListener("DOMContentLoaded", () => {
     //global variables 
     body = document.querySelector("body");
     main = document.querySelector("main");
-
+    navBar = document.querySelector("#nav-bar");
     //function 
     renderLoginForm();
 });
@@ -15,7 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
 const renderLoginForm = () => {
 
     //user login Form
+    let formDiv = document.createElement("div")
+    formDiv.id = "form-div"
     let loginForm = document.createElement("form")
+    formDiv.append(loginForm)
+
     loginForm.innerHTML =
         `<label>User Name</label>
         <input type="text" id="login-name">
@@ -28,9 +33,11 @@ const renderLoginForm = () => {
     let signUpButton = document.createElement("button")
     signUpButton.innerHTML = "Sign Up"
     signUpButton.id = "sign-up-button"
+    signUpButton.className = "menu-button"
 
     loginForm.id = "login-form"
-    main.append(loginForm, signUpButton)
+    main.append(formDiv)
+    navBar.append(signUpButton)
 
 
     loginForm.addEventListener("submit", handleLogin)
@@ -45,13 +52,47 @@ const handleLogin = (event) => {
     let userName = document.querySelector("#login-name").value
     let userPassword = document.querySelector("#login-password").value
 
-    //fetch 
+    //post request to make new user 
+    let requestPackage = {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            user: {
+                name: userName,
+                password: userPassword,
+            }
+        })
+    }
 
-    //get request to load a user
+    //fetch 
+    fetch("http://localhost:3000/login", requestPackage)
+        .then(resp => resp.json())
+        .then(resolveLogin)
 }
 
+const resolveLogin = (loggedInUser) => {
+    currentUser = loggedInUser
+    let logOutButton = document.createElement("button")
+    logOutButton.id = "log-out-button"
+    logOutButton.className = "menu-button"
+    navBar.innerHTML = ""
+    navBar.append(logOutButton)
+    logOutButton.innerText = "Log Out"
+    logOutButton.addEventListener("click", handleLogOut)
+
+    fetchCharacters()
+}
+
+const handleLogOut = () => {
+    currentUser = null
+    main.innerHTML = ""
+    navBar.innerHTML = `
+    `
+    renderLoginForm()
+}
 
 const renderSignUpForm = (event) => {
+    navBar.innerHTML = ""
 
     //clear login form Signup form 
     main.innerHTML = `<form id="sign-up-form">
@@ -77,11 +118,11 @@ const renderSignUpForm = (event) => {
 const handleSignUp = (event) => {
     event.preventDefault()
 
+
     let userName = document.querySelector("#login-name").value
     let userPassword = document.querySelector("#login-password").value
     let userPicture = document.querySelector("#user-picture").value
-
-    //post request to make new user 
+        //post request to make new user 
     let requestPackage = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -94,16 +135,13 @@ const handleSignUp = (event) => {
         })
     }
     fetch("http://localhost:3000/users", requestPackage)
-        .then(resp => resp.json()) 
-        .then(loggedInUser => {
-            currentUser = loggedInUser
-            fetchCharacters()
-        })
+        .then(resp => resp.json())
+        .then(resolveLogin)
 
 }
 
 const fetchCharacters = () => {
-    
+
     fetch("http://localhost:3000/characters")
         .then(resp => resp.json())
         .then(characters => renderCharacterIndex(characters))
@@ -133,53 +171,57 @@ const renderCharacterShow = (character) => {
     // clear screen
     main.innerHTML = ""
     let firstMeeting = false
-    // if first time meeting...
-    if(!myCharacters.includes(character)){
+        // if first time meeting...
+    if (!myCharacters.includes(character)) {
         meetCharacter(character)
         firstMeeting = true
     }
 
     //display character
-    let name = document.createElement("div")
-    name.innerText = character.name
+    let charName = document.createElement("div")
+        // charName.innerText = character.name
     let pic = document.createElement("img")
     pic.src = character.picture_url
+    pic.addEventListener("mouseover", () => {
+        charName.innerText = character.name
+    })
+    pic.addEventListener("mouseout", () => { charName.innerText = "" })
 
     //dialogue
     let dialoguePrompt = document.createElement("div")
 
     let dialogueArray = characterDialogue(character.interest)
 
-    if(firstMeeting) {
+    if (firstMeeting) {
         dialoguePrompt.innerText = "Nice to meet you. " + dialogueArray[0]
-    }
-    else {
+    } else {
         dialoguePrompt.innerText = dialogueArray[0]
     }
     let i = 1
-    while(i < dialogueArray.length - 2) {
+    while (i < dialogueArray.length - 2) {
         renderDialogueOptions(i, dialogueArray)
         i++
     }
-    main.append(name, pic, dialoguePrompt)
+    main.append(charName, pic, dialoguePrompt)
 }
 
+
 const meetCharacter = (character) => {
-    
+
     // fetch post request to build a relationship
     fetch("http://localhost:3000/relationships", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
                 user_id: currentUser.id,
                 character_id: character.id
+            })
         })
-    })
         .then(myCharacters.push(character))
 }
 
 const characterDialogue = (interest) => {
-    switch(interest) {
+    switch (interest) {
         case "Marine Biology":
             return [
                 "Avast ye landlubber!",
@@ -206,10 +248,9 @@ const renderDialogueOptions = (i, dialogueArray) => {
     div.innerText = dialogueArray[i]
     main.append(div)
     div.addEventListener("click", () => {
-        if(i == dialogueArray[5]){
+        if (i == dialogueArray[5]) {
             correctAnswer()
-        }
-        else {
+        } else {
             wrongAnswer()
         }
     })

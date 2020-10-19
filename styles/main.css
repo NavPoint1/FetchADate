@@ -1,10 +1,10 @@
-form#login-form {
+form#sign-up-form {
     color: gray;
     margin-top: 10%;
     text-align: center;
 }
 
-form#sign-up-form {
+form#login-form {
     color: gray;
     margin-top: 10%;
     text-align: center;
@@ -14,6 +14,20 @@ input {
     margin-bottom: 1%;
 }
 
-#sign-up-button {
-    margin-left: 50%;
+.menu-button {
+    float: right;
+}
+
+#form-div {
+    width: 200px;
+    height: auto;
+    margin: 10 auto;
+    padding: 10px;
+    position: relative;
+    border: thick double blue;
+    color: whitesmoke;
+}
+
+img {
+    height: 80%;
 }
