@@ -75,8 +75,10 @@ const handleLogin = (event) => {
 const resolveLogin = (loggedInUser) => {
     // set up globals
     currentUser = loggedInUser
-    loggedInUser.characters.forEach(character => myCharacterIds.push(character.id))
-    loggedInUser.relationships.forEach(relationship => myRelationshipIds.push(relationship.id))
+    if(loggedInUser.characters){
+        loggedInUser.characters.forEach(character => myCharacterIds.push(character.id))
+        loggedInUser.relationships.forEach(relationship => myRelationshipIds.push(relationship.id))
+    }
         // clear sign in button
     navBar.innerHTML = ""
         // logout button
@@ -174,33 +176,31 @@ const renderCharacterIndexItem = (character, ul) => {
 const renderCharacterShow = (character) => {
     // clear screen
     main.innerHTML = ""
-    let firstMeeting = false
-        // if first time meeting...
-    if (!myCharacterIds.includes(character.id)) {
-        meetCharacter(character)
-        firstMeeting = true
-    }
     // display character
     let charName = document.createElement("div")
     let pic = document.createElement("img")
     pic.src = character.picture_url
     pic.addEventListener("mouseover", () => { charName.innerText = character.name })
     pic.addEventListener("mouseout", () => { charName.innerText = "" })
-        // dialogue
-    let dialoguePrompt = document.createElement("div")
-    let dialogueArray = characterDialogue(character.interest)
-    if (firstMeeting) {
-        dialoguePrompt.innerText = "Nice to meet you. " + dialogueArray[0]
-    } else {
-        dialoguePrompt.innerText = dialogueArray[0]
-    }
-    main.append(dialoguePrompt)
-    let i = 1
-    while (i < dialogueArray.length - 1) {
-        renderDialogueOptions(i, dialogueArray, character)
-        i++
-    }
     main.append(pic, charName)
+    // fetch dialogue
+    fetchDialogue(character)
+}
+
+const fetchDialogue = (character) => {
+    let requestPackage = {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            user_id: currentUser.id
+        })
+    }
+
+    fetch(URL + "interests/" + character.interest.id, requestPackage)
+        .then(resp => resp.json())
+        .then(dialogueArray => {
+            characterDialogue(dialogueArray, character)
+        })
 }
 
 const meetCharacter = (character) => {
@@ -220,10 +220,25 @@ const meetCharacter = (character) => {
         })
 }
 
-const characterDialogue = (interest) => {
-    fetch(URL + "interests" + interest.id)
-        .then(resp => resp.json())
-        .then(questionArray => questionArray)
+const characterDialogue = (dialogueArray, character) => {
+    let dialoguePrompt = document.createElement("div")
+    let firstMeeting = false
+    // if first time meeting...
+    if (!myCharacterIds.includes(character.id)) {
+        meetCharacter(character)
+        firstMeeting = true
+    }
+    if (firstMeeting) {
+        dialoguePrompt.innerText = "Nice to meet you. " + dialogueArray[0]
+    } else {
+        dialoguePrompt.innerText = dialogueArray[0]
+    }
+    main.append(dialoguePrompt)
+    let i = 1
+    while (i < dialogueArray.length) {
+        renderDialogueOptions(i, dialogueArray, character)
+        i++
+    }
 }
 
 
