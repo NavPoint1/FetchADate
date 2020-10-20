@@ -4,6 +4,7 @@ let main
 let currentUser
 let myCharacterIds = []
 let navBar
+let myRelationshipIds = []
 
 document.addEventListener("DOMContentLoaded", () => {
     // global variables 
@@ -36,15 +37,15 @@ const renderLoginForm = () => {
         <br>
         <button id="login-button">Login</button>`
     loginForm.id = "login-form"
-    // sign up button
+        // sign up button
     let signUpButton = document.createElement("button")
     signUpButton.innerHTML = "Sign Up"
     signUpButton.id = "sign-up-button"
     signUpButton.className = "menu-button"
-    // append
+        // append
     main.append(formDiv)
     navBar.append(signUpButton)
-    // event listeners
+        // event listeners
     loginForm.addEventListener("submit", handleLogin)
     signUpButton.addEventListener("click", renderSignUpForm)
 
@@ -54,18 +55,18 @@ const handleLogin = (event) => {
     event.preventDefault()
     let userName = document.querySelector("#login-name").value
     let userPassword = document.querySelector("#login-password").value
-    // post request to make new user 
+        // post request to make new user 
     let requestPackage = {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            user: {
-                name: userName,
-                password: userPassword,
-            }
-        })
-    }
-    // fetch 
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                user: {
+                    name: userName,
+                    password: userPassword,
+                }
+            })
+        }
+        // fetch 
     fetch(URL + "login", requestPackage)
         .then(resp => resp.json())
         .then(resolveLogin)
@@ -75,16 +76,17 @@ const resolveLogin = (loggedInUser) => {
     // set up globals
     currentUser = loggedInUser
     loggedInUser.characters.forEach(character => myCharacterIds.push(character.id))
-    // clear sign in button
+    loggedInUser.relationships.forEach(relationship => myRelationshipIds.push(relationship.id))
+        // clear sign in button
     navBar.innerHTML = ""
-    // logout button
+        // logout button
     let logOutButton = document.createElement("button")
     logOutButton.id = "log-out-button"
     logOutButton.className = "menu-button"
     navBar.append(logOutButton)
     logOutButton.innerText = "Log Out"
     logOutButton.addEventListener("click", handleLogOut)
-    // start game
+        // start game
     fetchCharacters()
 }
 
@@ -97,7 +99,7 @@ const handleLogOut = () => {
 
 const renderSignUpForm = (event) => {
     navBar.innerHTML = ""
-    // clear login form + build signup form 
+        // clear login form + build signup form 
     main.innerHTML = `<form id="sign-up-form">
         <label>User Name</label>
         <input type="text" id="login-name">
@@ -110,7 +112,7 @@ const renderSignUpForm = (event) => {
         <br>
         <button id="sign-up-button">Sign Up</button>
         </form>`
-    // eventListener for submit --> handleSignup 
+        // eventListener for submit --> handleSignup 
     let signUpForm = document.querySelector("#sign-up-form")
     signUpForm.addEventListener("submit", handleSignUp)
 }
@@ -120,7 +122,7 @@ const handleSignUp = (event) => {
     let userName = document.querySelector("#login-name").value
     let userPassword = document.querySelector("#login-password").value
     let userPicture = document.querySelector("#user-picture").value
-    // post request to make new user 
+        // post request to make new user 
     let requestPackage = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -148,16 +150,16 @@ const fetchCharacters = () => {
 const renderCharacterIndex = (characters) => {
     // clear screen
     main.innerHTML = ""
-    // display characters
+        // display characters
     let ul = document.createElement("ul")
     main.append(ul)
     ul.id = "character-list"
     characters.forEach(character => {
-        renderCharacterIndexItem(character, ul)
-    })
-    // user show button
-    // user show event listener
-    
+            renderCharacterIndexItem(character, ul)
+        })
+        // user show button
+        // user show event listener
+
 }
 
 const renderCharacterIndexItem = (character, ul) => {
@@ -173,7 +175,7 @@ const renderCharacterShow = (character) => {
     // clear screen
     main.innerHTML = ""
     let firstMeeting = false
-    // if first time meeting...
+        // if first time meeting...
     if (!myCharacterIds.includes(character.id)) {
         meetCharacter(character)
         firstMeeting = true
@@ -184,13 +186,12 @@ const renderCharacterShow = (character) => {
     pic.src = character.picture_url
     pic.addEventListener("mouseover", () => { charName.innerText = character.name })
     pic.addEventListener("mouseout", () => { charName.innerText = "" })
-    // dialogue
+        // dialogue
     let dialoguePrompt = document.createElement("div")
     let dialogueArray = characterDialogue(character.interest)
     if (firstMeeting) {
         dialoguePrompt.innerText = "Nice to meet you. " + dialogueArray[0]
-    }
-    else {
+    } else {
         dialoguePrompt.innerText = dialogueArray[0]
     }
     main.append(dialoguePrompt)
@@ -212,57 +213,50 @@ const meetCharacter = (character) => {
                 character_id: character.id
             })
         })
-        .then(myCharacterIds.push(character.id))
+        .then(response => response.json())
+        .then(relationship => () => {
+            myRelationshipIds.push(relationship.id)
+            myCharacterIds.push(character.id)
+        })
 }
 
 const characterDialogue = (interest) => {
-    switch(interest) {
-        case "Marine Biology":
-            return [
-                "Avast ye landlubber!",
-                "Tis a beautiful day for sailin",
-                "lets go drink",
-                "lets go steal",
-                "Walk away",
-                1
-            ]
-            break;
-        case "Pop Culture":
-            return ""
-            break;
-        case "Zodiac":
-            return ""
-            break;
-        default:
-            // code
-    }
+    fetch(URL + "interests" + interest.id)
+        .then(resp => resp.json())
+        .then(questionArray => questionArray)
 }
+
 
 const renderDialogueOptions = (i, dialogueArray, character) => {
     let div = document.createElement("div")
     div.innerText = i + ". " + dialogueArray[i]
     main.append(div)
     div.addEventListener("click", () => {
-        if (i == dialogueArray[5]) {
-            correctAnswer(character)
-        }
-        else {
-            wrongAnswer(character) // implement a "very wrong answer" that offends the person later?
-        }
+        answer(character, i)
     })
 }
 
-const correctAnswer = (character) => {
+const answer = (character, answerIndex) => {
     // fetch request to update relationship level
-    // display happy goodbye text?
-    // render character index?
-}
+    // patch request to relationship show page 
+    // relationship id 
+    let relationshipId = myRelationshipIds[myCharacterIds.indexOf(character.id)]
 
-const wrongAnswer = (character) => {
-    // display neutral goodbye text?
-    // render character index?
+    fetch(URL + "relationships/" + relationshipId, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                relationship: {
+                    answerIndex: answerIndex
+                }
+            })
+        })
+        .then()
+        // display happy goodbye text/bad goodbye text
+        // render character index?
 }
-
 
 /////// ideas
 // 1) relationship level should be an integer instead of a string so you can gain partial points?
