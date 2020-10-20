@@ -90,3 +90,7 @@
             font-family: 'Ubuntu', sans-serif;
             border-bottom: 1px solid #ccc;
         }
+        
+        body {
+            background-color: rgb(108, 122, 135);
+        }
