@@ -221,9 +221,14 @@ const meetCharacter = (character) => {
 }
 
 const characterDialogue = (dialogueArray, character) => {
+    // set up divs
+    let dialogueContainer = document.createElement("div")
+    main.append(dialogueContainer)
     let dialoguePrompt = document.createElement("div")
-    let firstMeeting = false
+    dialogueContainer.append(dialoguePrompt)
+    dialogueContainer.id = "dialogue-container"
     // if first time meeting...
+    let firstMeeting = false
     if (!myCharacterIds.includes(character.id)) {
         meetCharacter(character)
         firstMeeting = true
@@ -233,25 +238,25 @@ const characterDialogue = (dialogueArray, character) => {
     } else {
         dialoguePrompt.innerText = dialogueArray[0]
     }
-    main.append(dialoguePrompt)
+    dialogueContainer.append(dialoguePrompt)
     let i = 1
-    while (i < dialogueArray.length) {
-        renderDialogueOptions(i, dialogueArray, character)
+    while (i < dialogueArray.length - 1) {
+        renderDialogueOptions(i, dialogueArray, character, dialogueContainer)
         i++
     }
 }
 
 
-const renderDialogueOptions = (i, dialogueArray, character) => {
+const renderDialogueOptions = (i, dialogueArray, character, dialogueContainer) => {
     let div = document.createElement("div")
     div.innerText = i + ". " + dialogueArray[i]
-    main.append(div)
+    dialogueContainer.append(div)
     div.addEventListener("click", () => {
-        answer(character, i)
+        answer(character, i, dialogueArray.slice(-1)[0])
     })
 }
 
-const answer = (character, answerIndex) => {
+const answer = (character, answerIndex, questionId) => {
     // fetch request to update relationship level
     // patch request to relationship show page 
     // relationship id 
@@ -263,14 +268,45 @@ const answer = (character, answerIndex) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                relationship: {
-                    answerIndex: answerIndex
-                }
+                    response_index: answerIndex,
+                    question_id: questionId,
+                    interest_id: character.interest.id
             })
         })
-        .then()
-        // display happy goodbye text/bad goodbye text
-        // render character index?
+        .then(response => response.json())
+        .then(pointValue => {
+            // display happy goodbye text/bad goodbye text
+            let goodbyeText
+            if(pointValue > 0) {
+                // happy
+                goodbyeText = "Have a great day!"
+            }
+            else if(pointValue < 0) {
+                // mad
+                goodbyeText = "mad"
+            }
+            else {
+                // neutral
+                goodbyeText = "Goodbye"
+            }
+            // render goodbye text
+            goodbyePage(goodbyeText)
+        })
+}
+
+const goodbyePage = (goodbyeText) => {
+    // clear old text
+    let dialogueContainer = document.querySelector("#dialogue-container")
+    dialogueContainer.innerHTML = ""
+    // display goodbye text
+    let div = document.createElement("div")
+    div.innerText = goodbyeText
+    dialogueContainer.append(div)
+    // button to leave
+    let button = document.createElement("button")
+    button.innerText = "Leave"
+    main.append(button)
+    button.addEventListener("click", fetchCharacters)
 }
 
 /////// ideas
