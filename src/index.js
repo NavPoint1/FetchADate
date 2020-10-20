@@ -155,7 +155,8 @@ const renderCharacterIndex = (characters) => {
         renderCharacterIndexItem(character, ul)
     })
     // user show button
-
+    // user show event listener
+    
 }
 
 const renderCharacterIndexItem = (character, ul) => {
@@ -199,7 +200,6 @@ const renderCharacterShow = (character) => {
     }
     main.append(pic, charName)
 }
-
 
 const meetCharacter = (character) => {
     // fetch post request to build a relationship
