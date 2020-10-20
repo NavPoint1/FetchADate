@@ -22,11 +22,12 @@ const renderLoginForm = () => {
     formDiv.append(loginForm)
 
     loginForm.innerHTML =
-        `<label>User Name</label>
-        <input type="text" id="login-name">
+        `<p class="log-in-title">Sign in</p>
+        <!-- <label>User Name</label> -->
+        <input placeholder="Username" type="text" id="login-name">
         <br>
-        <label>Password</label>
-        <input type="password" id="login-password">
+        <!-- <label>Password</label> -->
+        <input placeholder="Password" type="password" id="login-password">
         <br>
         <button id="login-button">Login</button>`
 

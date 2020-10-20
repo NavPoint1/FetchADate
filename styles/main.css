@@ -1,33 +1,92 @@
-form#sign-up-form {
-    color: gray;
-    margin-top: 10%;
-    text-align: center;
-}
-
-form#login-form {
-    color: gray;
-    margin-top: 10%;
-    text-align: center;
-}
-
-input {
-    margin-bottom: 1%;
-}
-
-.menu-button {
-    float: right;
-}
-
-#form-div {
-    width: 200px;
-    height: auto;
-    margin: 10 auto;
-    padding: 10px;
-    position: relative;
-    border: thick double blue;
-    color: whitesmoke;
-}
-
-img {
-    height: 80%;
-}
+        /*sign-up-form body*/
+        
+        form#sign-up-form {
+            color: gray;
+            margin-top: 10%;
+            text-align: center;
+        }
+        /*login form title*/
+        
+        p.log-in-title {
+            padding-top: 1px;
+            color: rgb(169, 164, 172);
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: bold;
+            font-size: 23px;
+            font-family: 'Ubuntu', sans-serif;
+        }
+        
+        #form-div {
+            background-color: #FFFFFF;
+            opacity: 50%;
+            margin: 7em auto;
+            border-radius: 1.5em;
+            box-shadow: 0px 11px 35px 2px rgba(0, 0, 0, 0.14);
+            width: 20%;
+            height: 40%;
+            margin: 10 auto;
+            top: 200px;
+            padding: 10px;
+            position: relative;
+        }
+        /*login form body*/
+        
+        form#login-form {
+            color: gray;
+            margin-top: 5px;
+            text-align: center;
+            padding-top: 20px;
+        }
+        /*login form input*/
+        
+        input {
+            margin-bottom: 10%;
+            width: 76%;
+            color: rgb(38, 50, 56);
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 1px;
+            background: rgba(136, 126, 126, 0.04);
+            padding: 10px 20px;
+            border: 2px solid rgba(0, 0, 0, 0.02);
+            text-align: center;
+            margin-bottom: 27px;
+            font-family: 'Ubuntu', sans-serif;
+        }
+        
+        input:focus {
+            border: 2px solid rgba(0, 0, 0, 0.18) !important;
+        }
+        /*Sign Up & Log Out*/
+        
+        .menu-button {
+            float: right;
+        }
+        
+        #login-button {
+            cursor: pointer;
+            border-radius: 5em;
+            color: #fff;
+            background: linear-gradient(to right, rgb(165, 165, 170), rgb(172, 165, 165));
+            padding-left: 40px;
+            padding-right: 40px;
+            padding-bottom: 10px;
+            padding-top: 10px;
+            font-family: 'Ubuntu', sans-serif;
+            font-size: 13px;
+            box-shadow: 0 0 20px 1px rgba(0, 0, 0, 0.04);
+        }
+        /*character show*/
+        
+        img {
+            height: 80%;
+        }
+        
+        ul {
+            list-style-type: none;
+        }
+        
+        li {
+            font-family: 'Ubuntu', sans-serif;
+            border-bottom: 1px solid #ccc;
+        }
