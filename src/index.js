@@ -1,26 +1,31 @@
+const URL = "http://localhost:3000/"
 let body
 let main
 let currentUser
-let myCharacters = []
+let myCharacterIds = []
 let navBar
 
 document.addEventListener("DOMContentLoaded", () => {
-    //global variables 
-    body = document.querySelector("body");
-    main = document.querySelector("main");
-    navBar = document.querySelector("#nav-bar");
-    //function 
+    // global variables 
+    initializeGlobals();
+    // start game
     renderLoginForm();
 });
 
-const renderLoginForm = () => {
+const initializeGlobals = () => {
+    body = document.querySelector("body");
+    main = document.querySelector("main");
+    navBar = document.querySelector("#nav-bar");
+}
 
-    //user login Form
+//////////////// LOG IN ////////////////
+
+const renderLoginForm = () => {
+    // login form
     let formDiv = document.createElement("div")
     formDiv.id = "form-div"
     let loginForm = document.createElement("form")
     formDiv.append(loginForm)
-
     loginForm.innerHTML =
         `<label>User Name</label>
         <input type="text" id="login-name">
@@ -29,20 +34,17 @@ const renderLoginForm = () => {
         <input type="password" id="login-password">
         <br>
         <button id="login-button">Login</button>`
-
+    loginForm.id = "login-form"
+    // sign up button
     let signUpButton = document.createElement("button")
     signUpButton.innerHTML = "Sign Up"
     signUpButton.id = "sign-up-button"
     signUpButton.className = "menu-button"
-
-    loginForm.id = "login-form"
+    // append
     main.append(formDiv)
     navBar.append(signUpButton)
-
-
+    // event listeners
     loginForm.addEventListener("submit", handleLogin)
-
-    //sign up button
     signUpButton.addEventListener("click", renderSignUpForm)
 
 }
@@ -51,8 +53,7 @@ const handleLogin = (event) => {
     event.preventDefault()
     let userName = document.querySelector("#login-name").value
     let userPassword = document.querySelector("#login-password").value
-
-    //post request to make new user 
+    // post request to make new user 
     let requestPackage = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -63,38 +64,39 @@ const handleLogin = (event) => {
             }
         })
     }
-
-    //fetch 
-    fetch("http://localhost:3000/login", requestPackage)
+    // fetch 
+    fetch(URL + "login", requestPackage)
         .then(resp => resp.json())
         .then(resolveLogin)
 }
 
 const resolveLogin = (loggedInUser) => {
+    // set up globals
     currentUser = loggedInUser
+    loggedInUser.characters.forEach(character => myCharacterIds.push(character.id))
+    // clear sign in button
+    navBar.innerHTML = ""
+    // logout button
     let logOutButton = document.createElement("button")
     logOutButton.id = "log-out-button"
     logOutButton.className = "menu-button"
-    navBar.innerHTML = ""
     navBar.append(logOutButton)
     logOutButton.innerText = "Log Out"
     logOutButton.addEventListener("click", handleLogOut)
-
+    // start game
     fetchCharacters()
 }
 
 const handleLogOut = () => {
     currentUser = null
     main.innerHTML = ""
-    navBar.innerHTML = `
-    `
+    navBar.innerHTML = ""
     renderLoginForm()
 }
 
 const renderSignUpForm = (event) => {
     navBar.innerHTML = ""
-
-    //clear login form Signup form 
+    // clear login form + build signup form 
     main.innerHTML = `<form id="sign-up-form">
         <label>User Name</label>
         <input type="text" id="login-name">
@@ -107,22 +109,17 @@ const renderSignUpForm = (event) => {
         <br>
         <button id="sign-up-button">Sign Up</button>
         </form>`
-
-    //eventListener for submit --> handleSignup 
+    // eventListener for submit --> handleSignup 
     let signUpForm = document.querySelector("#sign-up-form")
     signUpForm.addEventListener("submit", handleSignUp)
-
-
 }
 
 const handleSignUp = (event) => {
     event.preventDefault()
-
-
     let userName = document.querySelector("#login-name").value
     let userPassword = document.querySelector("#login-password").value
     let userPicture = document.querySelector("#user-picture").value
-        //post request to make new user 
+    // post request to make new user 
     let requestPackage = {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -134,28 +131,31 @@ const handleSignUp = (event) => {
             }
         })
     }
-    fetch("http://localhost:3000/users", requestPackage)
+    fetch(URL + "users", requestPackage)
         .then(resp => resp.json())
         .then(resolveLogin)
-
 }
 
-const fetchCharacters = () => {
+//////////////// GAME ////////////////
 
-    fetch("http://localhost:3000/characters")
+const fetchCharacters = () => {
+    fetch(URL + "characters")
         .then(resp => resp.json())
         .then(characters => renderCharacterIndex(characters))
 }
 
-
 const renderCharacterIndex = (characters) => {
+    // clear screen
     main.innerHTML = ""
+    // display characters
     let ul = document.createElement("ul")
     main.append(ul)
     ul.id = "character-list"
     characters.forEach(character => {
         renderCharacterIndexItem(character, ul)
     })
+    // user show button
+
 }
 
 const renderCharacterIndexItem = (character, ul) => {
@@ -171,45 +171,39 @@ const renderCharacterShow = (character) => {
     // clear screen
     main.innerHTML = ""
     let firstMeeting = false
-        // if first time meeting...
-    if (!myCharacters.includes(character)) {
+    // if first time meeting...
+    if (!myCharacterIds.includes(character.id)) {
         meetCharacter(character)
         firstMeeting = true
     }
-
-    //display character
+    // display character
     let charName = document.createElement("div")
-        // charName.innerText = character.name
     let pic = document.createElement("img")
     pic.src = character.picture_url
-    pic.addEventListener("mouseover", () => {
-        charName.innerText = character.name
-    })
+    pic.addEventListener("mouseover", () => { charName.innerText = character.name })
     pic.addEventListener("mouseout", () => { charName.innerText = "" })
-
-    //dialogue
+    // dialogue
     let dialoguePrompt = document.createElement("div")
-
     let dialogueArray = characterDialogue(character.interest)
-
     if (firstMeeting) {
         dialoguePrompt.innerText = "Nice to meet you. " + dialogueArray[0]
-    } else {
+    }
+    else {
         dialoguePrompt.innerText = dialogueArray[0]
     }
+    main.append(dialoguePrompt)
     let i = 1
-    while (i < dialogueArray.length - 2) {
-        renderDialogueOptions(i, dialogueArray)
+    while (i < dialogueArray.length - 1) {
+        renderDialogueOptions(i, dialogueArray, character)
         i++
     }
-    main.append(charName, pic, dialoguePrompt)
+    main.append(pic, charName)
 }
 
 
 const meetCharacter = (character) => {
-
     // fetch post request to build a relationship
-    fetch("http://localhost:3000/relationships", {
+    fetch(URL + "relationships", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -217,11 +211,11 @@ const meetCharacter = (character) => {
                 character_id: character.id
             })
         })
-        .then(myCharacters.push(character))
+        .then(myCharacterIds.push(character.id))
 }
 
 const characterDialogue = (interest) => {
-    switch (interest) {
+    switch(interest) {
         case "Marine Biology":
             return [
                 "Avast ye landlubber!",
@@ -239,23 +233,36 @@ const characterDialogue = (interest) => {
             return ""
             break;
         default:
-            //code
+            // code
     }
 }
 
-const renderDialogueOptions = (i, dialogueArray) => {
+const renderDialogueOptions = (i, dialogueArray, character) => {
     let div = document.createElement("div")
-    div.innerText = dialogueArray[i]
+    div.innerText = i + ". " + dialogueArray[i]
     main.append(div)
     div.addEventListener("click", () => {
         if (i == dialogueArray[5]) {
-            correctAnswer()
-        } else {
-            wrongAnswer()
+            correctAnswer(character)
+        }
+        else {
+            wrongAnswer(character) // implement a "very wrong answer" that offends the person later?
         }
     })
 }
 
-const correctAnswer = () => {
-
+const correctAnswer = (character) => {
+    // fetch request to update relationship level
+    // display happy goodbye text?
+    // render character index?
 }
+
+const wrongAnswer = (character) => {
+    // display neutral goodbye text?
+    // render character index?
+}
+
+
+/////// ideas
+// 1) relationship level should be an integer instead of a string so you can gain partial points?
+// 2) interests should be a model?
