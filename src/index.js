@@ -98,7 +98,7 @@ const handleLogOut = () => {
     myRelationshipIds = []
     main.innerHTML = ""
     navBar.innerHTML = ""
-
+    body.className = "logout"
     renderLoginForm()
 }
 
@@ -155,12 +155,14 @@ const fetchCharacters = () => {
 const renderCharacterIndex = (characters) => {
     // clear screen
     main.innerHTML = ""
+
+    //character image container
+    let imgDiv = document.createElement("div")
+    imgDiv.className = "character-img-index-container"
+    main.append(imgDiv)
         // display characters
-    let ul = document.createElement("ul")
-    main.append(ul)
-    ul.id = "character-list"
     characters.forEach(character => {
-            renderCharacterIndexItem(character, ul)
+            renderCharacterIndexItem(character, characters.indexOf(character), imgDiv)
         })
         // user show button
         // user show event listener
@@ -169,13 +171,18 @@ const renderCharacterIndex = (characters) => {
     userShowButton.innerText = currentUser.name
     navBar.append(userShowButton)
     userShowButton.addEventListener("click", fetchUserShow)
+
+    // change background image 
+    body.className = "character-index"
 }
 
-const renderCharacterIndexItem = (character, ul) => {
-    let li = document.createElement("li")
-    ul.append(li)
-    li.innerText = character.name
-    li.addEventListener("click", () => {
+const renderCharacterIndexItem = (character, index, imgDiv) => {
+    let img = document.createElement("img")
+    img.id = "charImg" + index
+    img.classList.add("character-image-index")
+    imgDiv.append(img)
+    img.src = character.picture_url
+    img.addEventListener("click", () => {
         renderCharacterShow(character)
     })
 }
@@ -184,9 +191,11 @@ const renderCharacterShow = (character) => {
     // clear screen
     main.innerHTML = ""
     deleteUserShowButton()
+    body.className = "character-show" //change background image
         // display character
     let charName = document.createElement("div")
     let pic = document.createElement("img")
+    pic.classList.add("character-image-show")
     pic.src = character.picture_url
     pic.addEventListener("mouseover", () => { charName.innerText = character.name })
     pic.addEventListener("mouseout", () => { charName.innerText = "" })
@@ -339,7 +348,10 @@ const fetchUserShow = () => {
 
 const renderUserShow = () => {
     let relationships = currentUser.relationships
-        // show user's name and pic (and points and items)
+        //clear background 
+    body.className = "user-show"
+
+    // show user's name and pic (and points and items)
     let myName = document.createElement("div")
     myName.innerText = currentUser.name
     let pic = document.createElement("img")

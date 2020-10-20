@@ -78,19 +78,58 @@
         }
         /*character show*/
         
-        img {
+        img.character-image-show {
             height: 80%;
         }
+        /*background character index*/
         
-        ul {
-            list-style-type: none;
+        body.character-index {
+            margin: 0 auto;
+        }
+        /*background image character index*/
+        
+        .character-index::before {
+            content: "";
+            background: url("https://i.redd.it/4xhhmdv23r511.jpg") no-repeat fixed center;
+            background-size: cover;
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            z-index: -1;
         }
         
-        li {
-            font-family: 'Ubuntu', sans-serif;
-            border-bottom: 1px solid #ccc;
+        body.character-show {
+            background: lightblue;
         }
         
-        body {
-            background-color: rgb(108, 122, 135);
+        body.user-show {
+            background: lightblue;
+        }
+        
+        body.logout {
+            background: lightblue;
+        }
+        
+        #charImg0 {
+            height: 30%;
+            display: flex;
+        }
+        
+        #charImg1 {
+            /*bottom left image*/
+            height: 30%;
+            display: flex;
+            margin-top: -25%;
+            margin-left: 50%;
+        }
+        
+        #charImg2 {
+            height: 40%;
+            display: flex;
+        }
+        
+        .character-img-index-container {
+            margin-top: 30%;
         }
