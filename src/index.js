@@ -75,11 +75,11 @@ const handleLogin = (event) => {
 const resolveLogin = (loggedInUser) => {
     // set up globals
     currentUser = loggedInUser
-    if(loggedInUser.characters){
+    if (loggedInUser.characters) {
         loggedInUser.characters.forEach(character => myCharacterIds.push(character.id))
         loggedInUser.relationships.forEach(relationship => myRelationshipIds.push(relationship.id))
     }
-        // clear sign in button
+    // clear sign in button
     navBar.innerHTML = ""
         // logout button
     let logOutButton = document.createElement("button")
@@ -94,8 +94,11 @@ const resolveLogin = (loggedInUser) => {
 
 const handleLogOut = () => {
     currentUser = null
+    myCharacterIds = []
+    myRelationshipIds = []
     main.innerHTML = ""
     navBar.innerHTML = ""
+
     renderLoginForm()
 }
 
@@ -157,10 +160,10 @@ const renderCharacterIndex = (characters) => {
     main.append(ul)
     ul.id = "character-list"
     characters.forEach(character => {
-        renderCharacterIndexItem(character, ul)
-    })
-    // user show button
-    // user show event listener
+            renderCharacterIndexItem(character, ul)
+        })
+        // user show button
+        // user show event listener
     let userShowButton = document.createElement("button")
     userShowButton.id = "user-show-button"
     userShowButton.innerText = currentUser.name
@@ -181,18 +184,50 @@ const renderCharacterShow = (character) => {
     // clear screen
     main.innerHTML = ""
     deleteUserShowButton()
-    // display character
+        // display character
     let charName = document.createElement("div")
     let pic = document.createElement("img")
     pic.src = character.picture_url
     pic.addEventListener("mouseover", () => { charName.innerText = character.name })
     pic.addEventListener("mouseout", () => { charName.innerText = "" })
     main.append(pic, charName)
-    // fetch dialogue
-    fetchDialogue(character)
+
+    //first meeting check 
+    firstMeetingCheck(character)
 }
 
-const fetchDialogue = (character) => {
+const firstMeetingCheck = (character) => {
+    // if first time meeting...
+    //create relationship 
+    let firstMeeting = false
+    if (!myCharacterIds.includes(character.id)) {
+        firstMeeting = true
+        createRelationship(character, firstMeeting)
+    } else {
+        fetchDialogue(character, firstMeeting)
+    }
+}
+
+
+const createRelationship = (character, firstMeeting) => {
+    // fetch post request to build a relationship
+    fetch(URL + "relationships", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                user_id: currentUser.id,
+                character_id: character.id
+            })
+        })
+        .then(response => response.json())
+        .then(relationship => {
+            myRelationshipIds.push(relationship.id)
+            myCharacterIds.push(character.id)
+            fetchDialogue(character, firstMeeting)
+        })
+}
+
+const fetchDialogue = (character, firstMeeting) => {
     let requestPackage = {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -204,40 +239,17 @@ const fetchDialogue = (character) => {
     fetch(URL + "interests/" + character.interest.id, requestPackage)
         .then(resp => resp.json())
         .then(dialogueArray => {
-            characterDialogue(dialogueArray, character)
+            characterDialogue(dialogueArray, character, firstMeeting)
         })
 }
 
-const meetCharacter = (character) => {
-    // fetch post request to build a relationship
-    fetch(URL + "relationships", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                user_id: currentUser.id,
-                character_id: character.id
-            })
-        })
-        .then(response => response.json())
-        .then(relationship => () => {
-            myRelationshipIds.push(relationship.id)
-            myCharacterIds.push(character.id)
-        })
-}
-
-const characterDialogue = (dialogueArray, character) => {
+const characterDialogue = (dialogueArray, character, firstMeeting) => {
     // set up divs
     let dialogueContainer = document.createElement("div")
     main.append(dialogueContainer)
     let dialoguePrompt = document.createElement("div")
     dialogueContainer.append(dialoguePrompt)
     dialogueContainer.id = "dialogue-container"
-    // if first time meeting...
-    let firstMeeting = false
-    if (!myCharacterIds.includes(character.id)) {
-        meetCharacter(character)
-        firstMeeting = true
-    }
     if (firstMeeting) {
         dialoguePrompt.innerText = "Nice to meet you. " + dialogueArray[0]
     } else {
@@ -273,24 +285,22 @@ const answer = (character, answerIndex, questionId) => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                    response_index: answerIndex,
-                    question_id: questionId,
-                    interest_id: character.interest.id
+                response_index: answerIndex,
+                question_id: questionId,
+                interest_id: character.interest.id
             })
         })
         .then(response => response.json())
         .then(pointValue => {
             // display happy goodbye text/bad goodbye text
             let goodbyeText
-            if(pointValue > 0) {
+            if (pointValue > 0) {
                 // happy
                 goodbyeText = "Have a great day!"
-            }
-            else if(pointValue < 0) {
+            } else if (pointValue < 0) {
                 // mad
                 goodbyeText = "mad"
-            }
-            else {
+            } else {
                 // neutral
                 goodbyeText = "Goodbye"
             }
@@ -303,11 +313,11 @@ const goodbyePage = (goodbyeText) => {
     // clear old text
     let dialogueContainer = document.querySelector("#dialogue-container")
     dialogueContainer.innerHTML = ""
-    // display goodbye text
+        // display goodbye text
     let div = document.createElement("div")
     div.innerText = goodbyeText
     dialogueContainer.append(div)
-    // button to leave
+        // button to leave
     let button = document.createElement("button")
     button.innerText = "Leave"
     main.append(button)
@@ -318,7 +328,7 @@ const fetchUserShow = () => {
     // clear screen
     main.innerHTML = ""
     deleteUserShowButton()
-    // fetch updated current user + their relationships
+        // fetch updated current user + their relationships
     fetch(URL + "users/" + currentUser.id)
         .then(response => response.json())
         .then(updatedUser => {
@@ -329,49 +339,41 @@ const fetchUserShow = () => {
 
 const renderUserShow = () => {
     let relationships = currentUser.relationships
-    // show user's name and pic (and points and items)
+        // show user's name and pic (and points and items)
     let myName = document.createElement("div")
     myName.innerText = currentUser.name
     let pic = document.createElement("img")
     pic.src = currentUser.picture_url
     let relationshipsContainer = document.createElement("div")
     main.append(pic, myName, relationshipsContainer)
-    // index of relationships - show character + level
+        // index of relationships - show character + level
     relationships.forEach(relationship => {
-        let relationshipDiv = document.createElement("div")
-        relationshipsContainer.append(relationshipDiv)
-        let charName = currentUser.characters[relationships.indexOf(relationship)].name
-        let relationshipLvlText
-        if(relationship.level >= -3 && relationship.level < 0) {
-            relationshipLvlText = " doesn't listen when you speak."
-        }
-        else if(relationship.level >= -10 && relationship.level < -3) {
-            relationshipLvlText = " is totally ignoring you."
-        }
-        else if(relationship.level >= -20 && relationship.level < -10) {
-            relationshipLvlText = " looked disgusted last time you met."
-        }
-        else if(relationship.level < -20) {
-            relationshipLvlText = " is bitter about what you've done..."
-        }
-        else if(relationship.level >= 0 && relationship.level < 3) {
-            relationshipLvlText = " seems cool with you."
-        }
-        else if(relationship.level >= 3 && relationship.level < 7) {
-            relationshipLvlText = " is really friendly."
-        }
-        else if(relationship.level >= 7 && relationship.level < 10) {
-            relationshipLvlText = " might have been flirting with you?"
-        }
-        else if(relationship.level >= 10 && relationship.level < 15) {
-            relationshipLvlText = " was definitely flirting with you."
-        }
-        else if(relationship.level >= 15 && relationship.level < 30) {
-            relationshipLvlText = "crush"
-        }
-        relationshipDiv.innerText = charName + relationshipLvlText
-    })
-    // return to character index button: "Meet New People"
+            let relationshipDiv = document.createElement("div")
+            relationshipsContainer.append(relationshipDiv)
+            let charName = currentUser.characters[relationships.indexOf(relationship)].name
+            let relationshipLvlText
+            if (relationship.level >= -3 && relationship.level < 0) {
+                relationshipLvlText = " doesn't listen when you speak."
+            } else if (relationship.level >= -10 && relationship.level < -3) {
+                relationshipLvlText = " is totally ignoring you."
+            } else if (relationship.level >= -20 && relationship.level < -10) {
+                relationshipLvlText = " looked disgusted last time you met."
+            } else if (relationship.level < -20) {
+                relationshipLvlText = " is bitter about what you've done..."
+            } else if (relationship.level >= 0 && relationship.level < 3) {
+                relationshipLvlText = " seems cool with you."
+            } else if (relationship.level >= 3 && relationship.level < 7) {
+                relationshipLvlText = " is really friendly."
+            } else if (relationship.level >= 7 && relationship.level < 10) {
+                relationshipLvlText = " might have been flirting with you?"
+            } else if (relationship.level >= 10 && relationship.level < 15) {
+                relationshipLvlText = " was definitely flirting with you."
+            } else if (relationship.level >= 15 && relationship.level < 30) {
+                relationshipLvlText = "crush"
+            }
+            relationshipDiv.innerText = charName + relationshipLvlText
+        })
+        // return to character index button: "Meet New People"
     let returnButton = document.createElement("button")
     returnButton.innerText = "Meet New People"
     returnButton.addEventListener("click", fetchCharacters)
@@ -385,4 +387,5 @@ const deleteUserShowButton = () => {
 
 /////// ideas
 // 1) relationship level should be an integer instead of a string so you can gain partial points?
+// 2) interests should be a model? an integer instead of a string so you can gain partial points?
 // 2) interests should be a model?
