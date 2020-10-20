@@ -157,11 +157,15 @@ const renderCharacterIndex = (characters) => {
     main.append(ul)
     ul.id = "character-list"
     characters.forEach(character => {
-            renderCharacterIndexItem(character, ul)
-        })
-        // user show button
-        // user show event listener
-
+        renderCharacterIndexItem(character, ul)
+    })
+    // user show button
+    // user show event listener
+    let userShowButton = document.createElement("button")
+    userShowButton.id = "user-show-button"
+    userShowButton.innerText = currentUser.name
+    navBar.append(userShowButton)
+    userShowButton.addEventListener("click", fetchUserShow)
 }
 
 const renderCharacterIndexItem = (character, ul) => {
@@ -176,6 +180,7 @@ const renderCharacterIndexItem = (character, ul) => {
 const renderCharacterShow = (character) => {
     // clear screen
     main.innerHTML = ""
+    deleteUserShowButton()
     // display character
     let charName = document.createElement("div")
     let pic = document.createElement("img")
@@ -307,6 +312,75 @@ const goodbyePage = (goodbyeText) => {
     button.innerText = "Leave"
     main.append(button)
     button.addEventListener("click", fetchCharacters)
+}
+
+const fetchUserShow = () => {
+    // clear screen
+    main.innerHTML = ""
+    deleteUserShowButton()
+    // fetch updated current user + their relationships
+    fetch(URL + "users/" + currentUser.id)
+        .then(response => response.json())
+        .then(updatedUser => {
+            currentUser = updatedUser
+            renderUserShow();
+        })
+}
+
+const renderUserShow = () => {
+    let relationships = currentUser.relationships
+    // show user's name and pic (and points and items)
+    let myName = document.createElement("div")
+    myName.innerText = currentUser.name
+    let pic = document.createElement("img")
+    pic.src = currentUser.picture_url
+    let relationshipsContainer = document.createElement("div")
+    main.append(pic, myName, relationshipsContainer)
+    // index of relationships - show character + level
+    relationships.forEach(relationship => {
+        let relationshipDiv = document.createElement("div")
+        relationshipsContainer.append(relationshipDiv)
+        let charName = currentUser.characters[relationships.indexOf(relationship)].name
+        let relationshipLvlText
+        if(relationship.level >= -3 && relationship.level < 0) {
+            relationshipLvlText = " doesn't listen when you speak."
+        }
+        else if(relationship.level >= -10 && relationship.level < -3) {
+            relationshipLvlText = " is totally ignoring you."
+        }
+        else if(relationship.level >= -20 && relationship.level < -10) {
+            relationshipLvlText = " looked disgusted last time you met."
+        }
+        else if(relationship.level < -20) {
+            relationshipLvlText = " is bitter about what you've done..."
+        }
+        else if(relationship.level >= 0 && relationship.level < 3) {
+            relationshipLvlText = " seems cool with you."
+        }
+        else if(relationship.level >= 3 && relationship.level < 7) {
+            relationshipLvlText = " is really friendly."
+        }
+        else if(relationship.level >= 7 && relationship.level < 10) {
+            relationshipLvlText = " might have been flirting with you?"
+        }
+        else if(relationship.level >= 10 && relationship.level < 15) {
+            relationshipLvlText = " was definitely flirting with you."
+        }
+        else if(relationship.level >= 15 && relationship.level < 30) {
+            relationshipLvlText = "crush"
+        }
+        relationshipDiv.innerText = charName + relationshipLvlText
+    })
+    // return to character index button: "Meet New People"
+    let returnButton = document.createElement("button")
+    returnButton.innerText = "Meet New People"
+    returnButton.addEventListener("click", fetchCharacters)
+    main.append(returnButton)
+}
+
+const deleteUserShowButton = () => {
+    let button = document.querySelector("#user-show-button")
+    button.remove()
 }
 
 /////// ideas
