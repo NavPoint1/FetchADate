@@ -1,10 +1,11 @@
 const URL = "http://localhost:3000/"
 let body
 let main
+let navBar
 let currentUser
 let myCharacterIds = []
-let navBar
 let myRelationshipIds = []
+let myGiftIds = []
 
 document.addEventListener("DOMContentLoaded", () => {
     // global variables 
@@ -78,6 +79,7 @@ const resolveLogin = (loggedInUser) => {
     if (loggedInUser.characters) {
         loggedInUser.characters.forEach(character => myCharacterIds.push(character.id))
         loggedInUser.relationships.forEach(relationship => myRelationshipIds.push(relationship.id))
+        loggedInUser.gifts.forEach(gift => myGiftIds.push(gift.id))
     }
     // clear sign in button
     navBar.innerHTML = ""
@@ -96,6 +98,7 @@ const handleLogOut = () => {
     currentUser = null
     myCharacterIds = []
     myRelationshipIds = []
+    myGiftIds = []
     main.innerHTML = ""
     navBar.innerHTML = ""
 
@@ -143,7 +146,7 @@ const handleSignUp = (event) => {
         .then(resolveLogin)
 }
 
-//////////////// GAME ////////////////
+//////////////// BEGIN GAME ////////////////
 
 const fetchCharacters = () => {
     fetch(URL + "characters")
@@ -237,6 +240,8 @@ const createRelationship = (character, firstMeeting) => {
         })
 }
 
+//////////////// DIALOGUE ////////////////
+
 const fetchDialogue = (character, firstMeeting) => {
     let requestPackage = {
         method: "PATCH",
@@ -271,6 +276,69 @@ const characterDialogue = (dialogueArray, character, firstMeeting) => {
         renderDialogueOptions(i, dialogueArray, character, dialogueContainer)
         i++
     }
+    if(!firstMeeting && myGiftIds.length != 0) {
+        let giftOption = document.createElement("div")
+        giftOption.innerText = "5. Oh! that reminds me... I have something for you..." 
+        dialogueContainer.append(giftOption)
+        giftOption.addEventListener("click", () => {
+            renderOfferGiftMenu(character, dialogueContainer, dialoguePrompt)
+        })
+    }
+}
+
+const renderOfferGiftMenu = (character, dialogueContainer, dialoguePrompt) => {
+    dialogueContainer.innerHTML = ""
+    dialoguePrompt.innerText = "What have you got for me...?"
+    let i = 0
+    while (i < currentUser.gifts.length) {
+        renderOfferGiftItem(i, currentUser.gifts[i], character, dialogueContainer)
+        i++
+    }
+}
+
+const renderOfferGiftItem = (i, gift, character, dialogueContainer) => {
+    i = i + 1
+    let div = document.createElement("div")
+    div.innerText = i + ". " + gift.name
+    dialogueContainer.append(div)
+    div.addEventListener("click", () => {
+        giveGift(gift, character)
+    })
+}
+
+const giveGift = (gift, character) => {
+    // move to backend to conceal info from player -- but who cares at this point
+    let relationshipValue = 1
+    let giftResponse = "Oh. Thanks."
+    if(character.favorite_gift === gift.name) {
+        relationshipValue = gift.favoriteValue
+        giftResponse = "What! That's amazing!! Thank you so much!"
+    }
+    // fetch request to update user inventory + change relationship level
+    fetch(URL + "users/" + currentUser.id + "/give", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ 
+            gift_id: gift.id, // which gift to remove
+            user_id: currentUser.id, // which user to remove from
+            character_id: character.id, // use this + user to find relationship to modify
+            change: relationshipValue
+         })
+    })
+        .then(res => res.json())
+        .then(updatedUser => {
+            // update user data
+            currentUser = updatedUser
+            // remove gift id from tracked gifts
+            const index = myGiftIds.indexOf(gift.id);
+            if (index > -1) {
+                myGiftIds.splice(index, 1);
+            }
+            // render goodbye text
+            goodbyePage(giftResponse)
+        })
 }
 
 
@@ -334,6 +402,8 @@ const goodbyePage = (goodbyeText) => {
     button.addEventListener("click", fetchCharacters)
 }
 
+//////////////// PROFILE ////////////////
+
 const fetchUserShow = () => {
     // clear screen
     main.innerHTML = ""
@@ -349,9 +419,8 @@ const fetchUserShow = () => {
 
 const renderUserShow = () => {
     let relationships = currentUser.relationships
-        //clear background 
+    //clear background 
     body.className = "user-show"
-
     // show user's name and pic (and points and items)
     let myName = document.createElement("div")
     myName.innerText = currentUser.name
@@ -359,7 +428,7 @@ const renderUserShow = () => {
     pic.src = currentUser.picture_url
     let relationshipsContainer = document.createElement("div")
     main.append(pic, myName, relationshipsContainer)
-        // index of relationships - show character + level
+    // index of relationships - show character + level
     relationships.forEach(relationship => {
             let relationshipDiv = document.createElement("div")
             relationshipsContainer.append(relationshipDiv)
@@ -386,12 +455,99 @@ const renderUserShow = () => {
             }
             relationshipDiv.innerText = charName + relationshipLvlText
         })
-        // return to character index button: "Meet New People"
+    // return to character index button: "Meet New People"
     let returnButton = document.createElement("button")
     returnButton.innerText = "Meet New People"
     returnButton.addEventListener("click", fetchCharacters)
     main.append(returnButton)
+    // inventory
+    let inventoryDiv = document.createElement("div")
+    inventoryDiv.id = "inventory-container"
+    main.append(inventoryDiv)
+    inventoryDiv.innerText = "My Items:"
+    currentUser.gifts.forEach(gift => {
+        renderInventoryItem(gift, inventoryDiv)
+    })
+    // points
+    let pointsDiv = document.createElement("div")
+    pointsDiv.id = "currency-display"
+    pointsDiv.innerText = "Social Energy: " + currentUser.points
+    main.append(pointsDiv)
+    let giftHeader = document.createElement("div")
+    giftHeader.id = "gift-header"
+    giftHeader.innerText = "Get A Gift!"
+    pointsDiv.append(giftHeader)
+    fetchGiftsIndex(giftHeader)
 }
+
+const renderInventoryItem = (gift, inventoryDiv) => {
+    let giftDiv = document.createElement("div")
+    inventoryDiv.append(giftDiv)
+    giftDiv.innerText = gift.name
+}
+
+const fetchGiftsIndex = (giftHeader) => {
+    // fetch gifts
+    fetch(URL + "gifts/")
+        .then(response => response.json())
+        .then(gifts => {
+            gifts.forEach(gift => {
+                renderGiftItem(gift, giftHeader)
+            })
+        })
+}
+
+const renderGiftItem = (gift, giftHeader) => {
+    let giftDiv = document.createElement("div")
+    giftHeader.append(giftDiv)
+    giftDiv.innerText = gift.name
+    giftDiv.style.width = "15%"
+    let priceDiv = document.createElement('div')
+    giftDiv.append(priceDiv)
+    priceDiv.style.cssFloat = "right"
+    priceDiv.innerText = gift.price + " energy"
+    if(myGiftIds.includes(gift.id)) {
+        giftDiv.style.color = "gray"
+    }
+    else if(currentUser.points < gift.price) {
+        priceDiv.style.color = "gray"
+    }
+    else {
+        giftDiv.addEventListener("click", () => {
+            handleBuyGift(gift, giftHeader)
+        })
+    }
+}
+
+const handleBuyGift = (gift, giftHeader) => {
+    // fetch request to add gift to user
+    fetch(URL + "users/" + currentUser.id + "/buy", {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ gift_id: gift.id })
+    })
+        .then(res => res.json())
+        .then(updatedUser => {
+            // update user data
+            currentUser = updatedUser
+            // track gift
+            myGiftIds.push(gift.id)
+            // update DOM - inventory
+            let inventoryDiv = document.querySelector("#inventory-container")
+            renderInventoryItem(gift, inventoryDiv)
+            // update DOM - rerender purchase options (less currency, updated inventory)
+            giftHeader.innerHTML = ""
+            giftHeader.innerText = "Get A Gift!"
+            fetchGiftsIndex(giftHeader)
+            // update DOM - display correct amount of currency
+            let currencyText = document.querySelector("#currency-display").firstChild
+            currencyText.nodeValue = "Social Energy: " + currentUser.points
+        })
+        
+}
+
 
 const deleteUserShowButton = () => {
     let button = document.querySelector("#user-show-button")
