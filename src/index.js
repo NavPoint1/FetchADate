@@ -261,12 +261,12 @@ const fetchDialogue = (character, firstMeeting) => {
 const characterDialogue = (dialogueArray, character, firstMeeting) => {
     // set up divs
     let dialogueContainer = document.createElement("div")
+    dialogueContainer.id = "dialogue-container"
     main.append(dialogueContainer)
     let dialoguePrompt = document.createElement("div")
     dialogueContainer.append(dialoguePrompt)
-    dialogueContainer.id = "dialogue-container"
     if (firstMeeting) {
-        dialoguePrompt.innerText = "Nice to meet you. " + dialogueArray[0]
+        dialoguePrompt.innerHTML = `I'm ${character.name}. Nice to meet you.<br />` + dialogueArray[0]
     } else {
         dialoguePrompt.innerText = dialogueArray[0]
     }
@@ -281,13 +281,15 @@ const characterDialogue = (dialogueArray, character, firstMeeting) => {
         giftOption.innerText = "5. Oh! that reminds me... I have something for you..." 
         dialogueContainer.append(giftOption)
         giftOption.addEventListener("click", () => {
-            renderOfferGiftMenu(character, dialogueContainer, dialoguePrompt)
+            renderOfferGiftMenu(character, dialogueContainer)
         })
     }
 }
 
-const renderOfferGiftMenu = (character, dialogueContainer, dialoguePrompt) => {
+const renderOfferGiftMenu = (character, dialogueContainer) => {
     dialogueContainer.innerHTML = ""
+    let dialoguePrompt = document.createElement("div")
+    dialogueContainer.append(dialoguePrompt)
     dialoguePrompt.innerText = "What have you got for me...?"
     let i = 0
     while (i < currentUser.gifts.length) {
@@ -297,7 +299,7 @@ const renderOfferGiftMenu = (character, dialogueContainer, dialoguePrompt) => {
 }
 
 const renderOfferGiftItem = (i, gift, character, dialogueContainer) => {
-    i = i + 1
+    i++
     let div = document.createElement("div")
     div.innerText = i + ". " + gift.name
     dialogueContainer.append(div)
@@ -310,7 +312,7 @@ const giveGift = (gift, character) => {
     // move to backend to conceal info from player -- but who cares at this point
     let relationshipValue = 1
     let giftResponse = "Oh. Thanks."
-    if(character.favorite_gift === gift.name) {
+    if(character.interest.favorite_gift === gift.name) {
         relationshipValue = gift.favoriteValue
         giftResponse = "What! That's amazing!! Thank you so much!"
     }
@@ -450,8 +452,12 @@ const renderUserShow = () => {
                 relationshipLvlText = " might have been flirting with you?"
             } else if (relationship.level >= 10 && relationship.level < 15) {
                 relationshipLvlText = " was definitely flirting with you."
-            } else if (relationship.level >= 15 && relationship.level < 30) {
-                relationshipLvlText = "crush"
+            } else if (relationship.level >= 15 && relationship.level < 22) {
+                relationshipLvlText = "'s crush on you is obvious to everyone."
+            } else if (relationship.level >= 22 && relationship.level < 30) {
+                relationshipLvlText = " adores you."
+            } else if (relationship.level >= 30) {
+                relationshipLvlText = " is madly in love with you."
             }
             relationshipDiv.innerText = charName + relationshipLvlText
         })
