@@ -41,7 +41,7 @@ const renderLoginForm = () => {
     let signUpButton = document.createElement("button")
     signUpButton.innerHTML = "Sign Up"
     signUpButton.id = "sign-up-button"
-    signUpButton.className = "menu-button"
+    signUpButton.className = "ui button"
         // append
     main.append(formDiv)
     navBar.append(signUpButton)
@@ -84,7 +84,7 @@ const resolveLogin = (loggedInUser) => {
         // logout button
     let logOutButton = document.createElement("button")
     logOutButton.id = "log-out-button"
-    logOutButton.className = "menu-button"
+    logOutButton.className = "ui button"
     navBar.append(logOutButton)
     logOutButton.innerText = "Log Out"
     logOutButton.addEventListener("click", handleLogOut)
@@ -98,6 +98,8 @@ const handleLogOut = () => {
     myRelationshipIds = []
     main.innerHTML = ""
     navBar.innerHTML = ""
+
+    //change background image
     body.className = "logout"
     renderLoginForm()
 }
@@ -106,16 +108,13 @@ const renderSignUpForm = (event) => {
     navBar.innerHTML = ""
         // clear login form + build signup form 
     main.innerHTML = `<form id="sign-up-form">
-        <label>User Name</label>
-        <input type="text" id="login-name">
+        <input placeholder="Username" type="text" id="login-name">
         <br>
-        <label>Password</label>
-        <input type="password" id="login-password">
+        <input placeholder="Password" type="password" id="login-password">
         <br>
-        <label>Picture URL</label>
-        <input type="text" id="user-picture">
+        <input placeholder="Picture URL" type="text" id="user-picture">
         <br>
-        <button id="sign-up-button">Sign Up</button>
+        <button id="sign-up-button" class="ui button">Sign Up</button>
         </form>`
         // eventListener for submit --> handleSignup 
     let signUpForm = document.querySelector("#sign-up-form")
@@ -168,7 +167,8 @@ const renderCharacterIndex = (characters) => {
         // user show event listener
     let userShowButton = document.createElement("button")
     userShowButton.id = "user-show-button"
-    userShowButton.innerText = currentUser.name
+    userShowButton.className = "ui button"
+    userShowButton.innerText = "🏚"
     navBar.append(userShowButton)
     userShowButton.addEventListener("click", fetchUserShow)
 
@@ -191,7 +191,8 @@ const renderCharacterShow = (character) => {
     // clear screen
     main.innerHTML = ""
     deleteUserShowButton()
-    body.className = "character-show" //change background image
+        //change background image
+    body.className = "character-show"
         // display character
     let charName = document.createElement("div")
     let pic = document.createElement("img")
