@@ -272,6 +272,7 @@ const characterDialogue = (dialogueArray, character, firstMeeting) => {
     } else {
         dialoguePrompt.innerText = dialogueArray[0]
     }
+    dialoguePrompt.id = "dialogue-prompt"
     dialogueContainer.append(dialoguePrompt)
     let i = 1
     while (i < dialogueArray.length - 1) {
@@ -347,10 +348,11 @@ const giveGift = (gift, character) => {
 
 
 const renderDialogueOptions = (i, dialogueArray, character, dialogueContainer) => {
-    let div = document.createElement("div")
-    div.innerText = i + ". " + dialogueArray[i]
-    dialogueContainer.append(div)
-    div.addEventListener("click", () => {
+    let dialogueOptions = document.createElement("div")
+    dialogueOptions.innerText = i + ". " + dialogueArray[i]
+    dialogueOptions.id = "dialogue-options"
+    dialogueContainer.append(dialogueOptions)
+    dialogueOptions.addEventListener("click", () => {
         answer(character, i, dialogueArray.slice(-1)[0])
     })
 }
@@ -396,14 +398,16 @@ const goodbyePage = (goodbyeText) => {
     let dialogueContainer = document.querySelector("#dialogue-container")
     dialogueContainer.innerHTML = ""
         // display goodbye text
-    let div = document.createElement("div")
-    div.innerText = goodbyeText
-    dialogueContainer.append(div)
+    let goodbyeTextdiv = document.createElement("div")
+    goodbyeTextdiv.innerText = goodbyeText
+    goodbyeTextdiv.id = "goodbye-text-div"
+    dialogueContainer.append(goodbyeTextdiv)
         // button to leave
-    let button = document.createElement("button")
-    button.innerText = "Leave"
-    main.append(button)
-    button.addEventListener("click", fetchCharacters)
+    let buttonLeave = document.createElement("button")
+    buttonLeave.innerText = "Leave"
+    buttonLeave.id = "button-leave"
+    main.append(buttonLeave)
+    buttonLeave.addEventListener("click", fetchCharacters)
 }
 
 //////////////// PROFILE ////////////////
