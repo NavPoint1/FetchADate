@@ -184,16 +184,19 @@ const renderCharacterIndex = (characters) => {
 const renderCharacterIndexItem = (character, index, imgDiv) => {
     let charName = document.createElement("div")
     charName.id = "hover-char-name"
+    charName.style.visibility = "hidden"
     let img = document.createElement("img")
     img.id = "charImg" + index
     img.classList.add("character-image-index")
     imgDiv.append(img, charName)
     img.src = character.picture_url
     img.addEventListener("mouseover", () => {
-        charName.innerText = "Join " +
-            character.name + "at the Java Café!"
-    })
-    img.addEventListener("mouseout", () => { charName.innerHTML = "" })
+            charName.style.visibility = "visible"
+            charName.innerText = "Join " +
+                character.name + "at the Java Café!"
+
+        }) //
+    img.addEventListener("mouseout", () => { charName.style.visibility = "hidden" })
     img.addEventListener("click", () => {
         renderCharacterShow(character)
     })
@@ -288,7 +291,8 @@ const characterDialogue = (dialogueArray, character, firstMeeting) => {
     }
     if (!firstMeeting && myGiftIds.length != 0) {
         let giftOption = document.createElement("div")
-        giftOption.innerText = "5. Oh! that reminds me... I have something for you..."
+        giftOption.id = "give-gift-option"
+        giftOption.innerText = "🎁 Oh! that reminds me... I have something for you..."
         dialogueContainer.append(giftOption)
         giftOption.addEventListener("click", () => {
             renderOfferGiftMenu(character, dialogueContainer)
@@ -300,6 +304,7 @@ const renderOfferGiftMenu = (character, dialogueContainer) => {
     dialogueContainer.innerHTML = ""
     let dialoguePrompt = document.createElement("div")
     dialogueContainer.append(dialoguePrompt)
+    dialoguePrompt.id = "dialogue-prompt"
     dialoguePrompt.innerText = "What have you got for me...?"
     let i = 0
     while (i < currentUser.gifts.length) {
@@ -310,10 +315,11 @@ const renderOfferGiftMenu = (character, dialogueContainer) => {
 
 const renderOfferGiftItem = (i, gift, character, dialogueContainer) => {
     i++
-    let div = document.createElement("div")
-    div.innerText = i + ". " + gift.name
-    dialogueContainer.append(div)
-    div.addEventListener("click", () => {
+    let giftOfferOptions = document.createElement("div")
+    giftOfferOptions.id = "gift-offer-options"
+    giftOfferOptions.innerText = i + ". " + gift.name
+    dialogueContainer.append(giftOfferOptions)
+    giftOfferOptions.addEventListener("click", () => {
         giveGift(gift, character)
     })
 }
@@ -447,7 +453,7 @@ const renderUserShow = () => {
         // relationships title 
     let relationshipsTitleDiv = document.createElement("div")
     relationshipsTitleDiv.id = "relationships-title-div"
-    let relationshipsTitle = document.createElement("h1")
+    let relationshipsTitle = document.createElement("h3")
     relationshipsTitle.innerText = currentUser.name.toUpperCase() + "'S RELATIONSHIPS STATS"
     relationshipsTitleDiv.append(relationshipsTitle)
     main.append(pic, myName, relationshipsContainer, relationshipsTitleDiv)
@@ -510,7 +516,7 @@ const renderUserShow = () => {
         // points
     let pointsDiv = document.createElement("div")
     pointsDiv.id = "currency-display"
-    pointsDiv.innerText = "Social Energy: " + currentUser.points
+    pointsDiv.innerText = "👩‍❤️‍👩Social Energy: " + currentUser.points
     main.append(pointsDiv)
     let giftHeader = document.createElement("div")
     giftHeader.id = "gift-header"
