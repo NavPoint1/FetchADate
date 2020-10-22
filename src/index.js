@@ -173,7 +173,7 @@ const renderCharacterIndex = (characters) => {
     let userShowButton = document.createElement("button")
     userShowButton.id = "user-show-button"
     userShowButton.className = "ui button"
-    userShowButton.innerText = "🏠"
+    userShowButton.innerHTML = `<img class= "user-button-pic" src = ${currentUser.picture_url}> `
     navBar.append(userShowButton)
     userShowButton.addEventListener("click", fetchUserShow)
 
@@ -193,7 +193,7 @@ const renderCharacterIndexItem = (character, index, imgDiv) => {
     img.addEventListener("mouseover", () => {
             charName.style.visibility = "visible"
             charName.innerText = "Join " +
-                character.name + "at the Java Café!"
+                character.name + " at the Java Café!"
 
         }) //
     img.addEventListener("mouseout", () => { charName.style.visibility = "hidden" })
@@ -278,7 +278,8 @@ const characterDialogue = (dialogueArray, character, firstMeeting) => {
     let dialoguePrompt = document.createElement("div")
     dialogueContainer.append(dialoguePrompt)
     if (firstMeeting) {
-        dialoguePrompt.innerHTML = `I'm ${character.name}. Nice to meet you.<br />` + dialogueArray[0]
+        dialoguePrompt.innerHTML = `
+    I 'm ${character.name}. Nice to meet you.<br />` + dialogueArray[0]
     } else {
         dialoguePrompt.innerText = dialogueArray[0]
     }
@@ -516,7 +517,7 @@ const renderUserShow = () => {
         // points
     let pointsDiv = document.createElement("div")
     pointsDiv.id = "currency-display"
-    pointsDiv.innerText = "👩‍❤️‍👩Social Energy: " + currentUser.points
+    pointsDiv.innerText = "Social Energy: " + currentUser.points + " 💕"
     main.append(pointsDiv)
     let giftHeader = document.createElement("div")
     giftHeader.id = "gift-header"
