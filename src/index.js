@@ -23,7 +23,9 @@ const initializeGlobals = () => {
 //////////////// LOG IN ////////////////
 
 const renderLoginForm = () => {
-    // login form
+    //ogin background
+    body.className = "login-page"
+        // login form
     let formDiv = document.createElement("div")
     formDiv.id = "form-div"
     let loginForm = document.createElement("form")
@@ -276,9 +278,9 @@ const characterDialogue = (dialogueArray, character, firstMeeting) => {
         renderDialogueOptions(i, dialogueArray, character, dialogueContainer)
         i++
     }
-    if(!firstMeeting && myGiftIds.length != 0) {
+    if (!firstMeeting && myGiftIds.length != 0) {
         let giftOption = document.createElement("div")
-        giftOption.innerText = "5. Oh! that reminds me... I have something for you..." 
+        giftOption.innerText = "5. Oh! that reminds me... I have something for you..."
         dialogueContainer.append(giftOption)
         giftOption.addEventListener("click", () => {
             renderOfferGiftMenu(character, dialogueContainer)
@@ -312,28 +314,28 @@ const giveGift = (gift, character) => {
     // move to backend to conceal info from player -- but who cares at this point
     let relationshipValue = 1
     let giftResponse = "Oh. Thanks."
-    if(character.interest.favorite_gift === gift.name) {
+    if (character.interest.favorite_gift === gift.name) {
         relationshipValue = gift.favoriteValue
         giftResponse = "What! That's amazing!! Thank you so much!"
     }
     // fetch request to update user inventory + change relationship level
     fetch(URL + "users/" + currentUser.id + "/give", {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ 
-            gift_id: gift.id, // which gift to remove
-            user_id: currentUser.id, // which user to remove from
-            character_id: character.id, // use this + user to find relationship to modify
-            change: relationshipValue
-         })
-    })
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                gift_id: gift.id, // which gift to remove
+                user_id: currentUser.id, // which user to remove from
+                character_id: character.id, // use this + user to find relationship to modify
+                change: relationshipValue
+            })
+        })
         .then(res => res.json())
         .then(updatedUser => {
             // update user data
             currentUser = updatedUser
-            // remove gift id from tracked gifts
+                // remove gift id from tracked gifts
             const index = myGiftIds.indexOf(gift.id);
             if (index > -1) {
                 myGiftIds.splice(index, 1);
@@ -421,20 +423,33 @@ const fetchUserShow = () => {
 
 const renderUserShow = () => {
     let relationships = currentUser.relationships
-    //clear background 
+        //clear background 
     body.className = "user-show"
-    // show user's name and pic (and points and items)
+        // show user's name and pic (and points and items)
     let myName = document.createElement("div")
-    myName.innerText = currentUser.name
+        //myName.innerText = currentUser.name
     let pic = document.createElement("img")
     pic.src = currentUser.picture_url
+    pic.className = "user-show-picture"
     let relationshipsContainer = document.createElement("div")
-    main.append(pic, myName, relationshipsContainer)
-    // index of relationships - show character + level
+    relationshipsContainer.id = "relationships-container"
+        // relationships title 
+    let relationshipsTitleDiv = document.createElement("div")
+    relationshipsTitleDiv.id = "relationships-title-div"
+    let relationshipsTitle = document.createElement("h1")
+    relationshipsTitle.innerText = currentUser.name.toUpperCase() + "'S RELATIONSHIPS STATS"
+    relationshipsTitleDiv.append(relationshipsTitle)
+    main.append(pic, myName, relationshipsContainer, relationshipsTitleDiv)
+        // index of relationships - show character + level
     relationships.forEach(relationship => {
             let relationshipDiv = document.createElement("div")
-            relationshipsContainer.append(relationshipDiv)
+            let relationshipPicDiv = document.createElement("div")
+            let relationshipPic = document.createElement("img")
+            relationshipPic.id = "relationship-pic"
+            relationshipPicDiv.id = "relationship-pic-div"
+            relationshipsContainer.append(relationshipDiv, relationshipPicDiv)
             let charName = currentUser.characters[relationships.indexOf(relationship)].name
+            let charPic = currentUser.characters[relationships.indexOf(relationship)].picture_url
             let relationshipLvlText
             if (relationship.level >= -3 && relationship.level < 0) {
                 relationshipLvlText = " doesn't listen when you speak."
@@ -460,28 +475,35 @@ const renderUserShow = () => {
                 relationshipLvlText = " is madly in love with you."
             }
             relationshipDiv.innerText = charName + relationshipLvlText
+            relationshipPicDiv.append(relationshipPic)
+            relationshipPic.src = charPic
+            relationshipDiv.id = "relationship-div"
+            relationshipPicDiv.id = "relationship-pic"
         })
-    // return to character index button: "Meet New People"
+        // return to character index button: "Meet New People"
     let returnButton = document.createElement("button")
     returnButton.innerText = "Meet New People"
+    returnButton.id = "meet-new-peopole"
+    returnButton.className = "ui button"
+
     returnButton.addEventListener("click", fetchCharacters)
     main.append(returnButton)
-    // inventory
+        // inventory
     let inventoryDiv = document.createElement("div")
     inventoryDiv.id = "inventory-container"
     main.append(inventoryDiv)
-    inventoryDiv.innerText = "My Items:"
+    inventoryDiv.innerText = "🎁 My Gifts:"
     currentUser.gifts.forEach(gift => {
-        renderInventoryItem(gift, inventoryDiv)
-    })
-    // points
+            renderInventoryItem(gift, inventoryDiv)
+        })
+        // points
     let pointsDiv = document.createElement("div")
     pointsDiv.id = "currency-display"
     pointsDiv.innerText = "Social Energy: " + currentUser.points
     main.append(pointsDiv)
     let giftHeader = document.createElement("div")
     giftHeader.id = "gift-header"
-    giftHeader.innerText = "Get A Gift!"
+    giftHeader.innerText = "Buy A Gift!"
     pointsDiv.append(giftHeader)
     fetchGiftsIndex(giftHeader)
 }
@@ -512,13 +534,11 @@ const renderGiftItem = (gift, giftHeader) => {
     giftDiv.append(priceDiv)
     priceDiv.style.cssFloat = "right"
     priceDiv.innerText = gift.price + " energy"
-    if(myGiftIds.includes(gift.id)) {
+    if (myGiftIds.includes(gift.id)) {
         giftDiv.style.color = "gray"
-    }
-    else if(currentUser.points < gift.price) {
+    } else if (currentUser.points < gift.price) {
         priceDiv.style.color = "gray"
-    }
-    else {
+    } else {
         giftDiv.addEventListener("click", () => {
             handleBuyGift(gift, giftHeader)
         })
@@ -528,30 +548,30 @@ const renderGiftItem = (gift, giftHeader) => {
 const handleBuyGift = (gift, giftHeader) => {
     // fetch request to add gift to user
     fetch(URL + "users/" + currentUser.id + "/buy", {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ gift_id: gift.id })
-    })
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ gift_id: gift.id })
+        })
         .then(res => res.json())
         .then(updatedUser => {
             // update user data
             currentUser = updatedUser
-            // track gift
+                // track gift
             myGiftIds.push(gift.id)
-            // update DOM - inventory
+                // update DOM - inventory
             let inventoryDiv = document.querySelector("#inventory-container")
             renderInventoryItem(gift, inventoryDiv)
-            // update DOM - rerender purchase options (less currency, updated inventory)
+                // update DOM - rerender purchase options (less currency, updated inventory)
             giftHeader.innerHTML = ""
             giftHeader.innerText = "Get A Gift!"
             fetchGiftsIndex(giftHeader)
-            // update DOM - display correct amount of currency
+                // update DOM - display correct amount of currency
             let currencyText = document.querySelector("#currency-display").firstChild
             currencyText.nodeValue = "Social Energy: " + currentUser.points
         })
-        
+
 }
 
 
