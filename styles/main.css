@@ -6,6 +6,20 @@
         margin-top: 10%;
         text-align: center;
     }
+    
+    .sign-up-form {
+        background-color: #FFFFFF;
+        opacity: 80%;
+        margin: 7em auto;
+        border-radius: 1.5em;
+        box-shadow: 0px 11px 35px 2px rgba(0, 0, 0, 0.14);
+        width: 50%;
+        height: 70%;
+        margin: 10 auto;
+        top: 15%;
+        padding: 10px;
+        position: relative;
+    }
     /*********************************************LOGIN PAGE****************************************************************/
     /*login page*/
     
@@ -34,7 +48,7 @@
     
     #form-div {
         background-color: #FFFFFF;
-        opacity: 60%;
+        opacity: 80%;
         margin: 7em auto;
         border-radius: 1.5em;
         box-shadow: 0px 11px 35px 2px rgba(0, 0, 0, 0.14);
@@ -110,6 +124,22 @@
         width: 110px;
     }
     
+    #hover-char-name {
+        z-index: 1;
+        color: pink;
+        position: fixed;
+        left: 50%;
+        top: 10%;
+        font-size: 100%;
+        box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2);
+        background-color: rgba(255, 255, 255, .15);
+        border-radius: 90px;
+        block-size: 50px;
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 10px;
+    }
+    
     img.character-image-show {
         height: 80%;
         margin-left: 40%;
@@ -132,7 +162,7 @@
     
     #dialogue-container {
         position: fixed;
-        top: 15%;
+        top: 30%;
         left: 10%;
         font-family: 'Ubuntu', sans-serif;
     }
@@ -140,7 +170,6 @@
     #dialogue-options {
         font-family: 'Ubuntu', sans-serif;
         position: sticky;
-        right: 55%;
         left: 5%;
         right: 30%;
         width: 300px;
@@ -150,7 +179,7 @@
         background-color: rgb(184, 140, 185);
         border: 2mm ridge rgba(98, 19, 39, 0.6);
         border-radius: 150px;
-        margin: 10px;
+        margin: 20px;
     }
     
     #goodbye-text-div {

@@ -112,7 +112,7 @@ const handleLogOut = () => {
 const renderSignUpForm = (event) => {
     navBar.innerHTML = ""
         // clear login form + build signup form 
-    main.innerHTML = `<form id="sign-up-form">
+    main.innerHTML = `<div class="sign-up-form"><form id="sign-up-form">
         <input placeholder="Username" type="text" id="login-name">
         <br>
         <input placeholder="Password" type="password" id="login-password">
@@ -120,7 +120,7 @@ const renderSignUpForm = (event) => {
         <input placeholder="Picture URL" type="text" id="user-picture">
         <br>
         <button id="sign-up-button" class="ui button">Sign Up</button>
-        </form>`
+        </form></div>`
         // eventListener for submit --> handleSignup 
     let signUpForm = document.querySelector("#sign-up-form")
     signUpForm.addEventListener("submit", handleSignUp)
@@ -182,11 +182,18 @@ const renderCharacterIndex = (characters) => {
 }
 
 const renderCharacterIndexItem = (character, index, imgDiv) => {
+    let charName = document.createElement("div")
+    charName.id = "hover-char-name"
     let img = document.createElement("img")
     img.id = "charImg" + index
     img.classList.add("character-image-index")
-    imgDiv.append(img)
+    imgDiv.append(img, charName)
     img.src = character.picture_url
+    img.addEventListener("mouseover", () => {
+        charName.innerText = "Join " +
+            character.name + "at the Java Café!"
+    })
+    img.addEventListener("mouseout", () => { charName.innerHTML = "" })
     img.addEventListener("click", () => {
         renderCharacterShow(character)
     })
