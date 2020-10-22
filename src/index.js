@@ -173,7 +173,7 @@ const renderCharacterIndex = (characters) => {
     let userShowButton = document.createElement("button")
     userShowButton.id = "user-show-button"
     userShowButton.className = "ui button"
-    userShowButton.innerText = "🏚"
+    userShowButton.innerText = "🏠"
     navBar.append(userShowButton)
     userShowButton.addEventListener("click", fetchUserShow)
 
