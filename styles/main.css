@@ -188,6 +188,7 @@ input:focus {
     vertical-align: middle;
     height: 130px;
     width: 380px;
+    font-size: 17px;
 }
 
 #gift-offer-options {
@@ -526,7 +527,6 @@ body.user-show {
 }
 
 div#relationship-pic {
-    background-color: rgb(184, 140, 185);
     margin-left: 60px;
     width: 150px;
     /* width of container */
@@ -536,7 +536,7 @@ div#relationship-pic {
     /* border: 5px solid black; */
     border: 4mm ridge rgba(98, 19, 39, 0.6);
     border-radius: 50px;
-    background: url("https://lh3.googleusercontent.com/proxy/IzMQ5iRs08lTgm-9861l1_XHqnbJBAZzzq838E5Sle9xcntA6De4OaAilr18J98IezfPkOWjXnZlDPa8rDrrgRSPSQfTKpNRukgB4sxFdKMdUQeDzw");
+    background: url("https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcT-3rzKiSz5BZEo9n8_C3Jvhj0KWGMhB4ROBA&usqp=CAU");
 }
 
 
