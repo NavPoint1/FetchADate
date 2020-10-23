@@ -283,8 +283,7 @@ const characterDialogue = (dialogueArray, character, firstMeeting) => {
     let dialoguePrompt = document.createElement("div")
     dialogueContainer.append(dialoguePrompt)
     if (firstMeeting) {
-        dialoguePrompt.innerHTML = `
-    I 'm ${character.name}. Nice to meet you.<br />` + dialogueArray[0]
+        dialoguePrompt.innerHTML = `I'm ${character.name}. Nice to meet you.<br />` + dialogueArray[0]
     } else {
         dialoguePrompt.innerText = dialogueArray[0]
     }
@@ -396,13 +395,12 @@ const answer = (character, answerIndex, questionId) => {
         .then(response => response.json())
         .then(pointValue => {
             // display happy goodbye text/bad goodbye text
-            let goodbyeHappy = ["😊 Have a great day!", `Bye ${currentUser.name}!`]
+            let goodbyeHappy = ["😊 Have a great day!", `Bye ${currentUser.name}`, `See you tomorrow ${currentUser.name}!`]
             let goodbyeNeutral = ["Goodbye 👋", "Bye.", "See you later.", "Have a good one.", "See ya."]
             let goodbyeMad = ["What?", "Uh okay.", "Yeah bye.", "Ight Imma head out.", "K bye 😠"]
             let goodbyeText
             if (pointValue > 0) {
                 // happy
-<<<<<<< HEAD
                 goodbyeText = goodbyeHappy[Math.floor(Math.random() * goodbyeHappy.length)];
             } else if (pointValue < 0) {
                 // mad
@@ -410,15 +408,6 @@ const answer = (character, answerIndex, questionId) => {
             } else {
                 // neutral
                 goodbyeText = goodbyeNeutral[Math.floor(Math.random() * goodbyeNeutral.length)];
-=======
-                goodbyeText = "Have a great day! 😊"
-            } else if (pointValue < 0) {
-                // mad
-                goodbyeText = "Mad 😠"
-            } else {
-                // neutral
-                goodbyeText = "Goodbye 👋"
->>>>>>> 6888b7be5b41509f8f7e7182be1f4e70a5404703
             }
             // render goodbye text
             goodbyePage(goodbyeText)
