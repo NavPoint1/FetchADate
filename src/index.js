@@ -1,11 +1,12 @@
 const URL = "http://localhost:3000/"
+
 let body
 let main
 let navBar
 let currentUser
-let myCharacterIds = []
-let myRelationshipIds = []
-let myGiftIds = []
+let myCharacterIds
+let myRelationshipIds
+let myGiftIds
 
 document.addEventListener("DOMContentLoaded", () => {
     // global variables 
@@ -18,6 +19,10 @@ const initializeGlobals = () => {
     body = document.querySelector("body");
     main = document.querySelector("main");
     navBar = document.querySelector("#nav-bar");
+    currentUser = {}
+    myCharacterIds = []
+    myRelationshipIds = []
+    myGiftIds = []
 }
 
 //////////////// LOG IN ////////////////
@@ -391,16 +396,19 @@ const answer = (character, answerIndex, questionId) => {
         .then(response => response.json())
         .then(pointValue => {
             // display happy goodbye text/bad goodbye text
+            let goodbyeHappy = ["Have a great day!", `Bye ${currentUser.name}!`]
+            let goodbyeNeutral = ["Goodbye.", "Bye.", "See you later.", "Have a good one.", "See ya."]
+            let goodbyeMad = ["What?", "Uh okay.", "Yeah bye.", "Ight Imma head out.", "K bye."]
             let goodbyeText
             if (pointValue > 0) {
                 // happy
-                goodbyeText = "Have a great day!"
+                goodbyeText = goodbyeHappy[Math.floor(Math.random() * goodbyeHappy.length)];
             } else if (pointValue < 0) {
                 // mad
-                goodbyeText = "mad"
+                goodbyeText = goodbyeMad[Math.floor(Math.random() * goodbyeMad.length)];
             } else {
                 // neutral
-                goodbyeText = "Goodbye"
+                goodbyeText = goodbyeNeutral[Math.floor(Math.random() * goodbyeNeutral.length)];
             }
             // render goodbye text
             goodbyePage(goodbyeText)
@@ -597,8 +605,3 @@ const deleteUserShowButton = () => {
     let button = document.querySelector("#user-show-button")
     button.remove()
 }
-
-/////// ideas
-// 1) relationship level should be an integer instead of a string so you can gain partial points?
-// 2) interests should be a model? an integer instead of a string so you can gain partial points?
-// 2) interests should be a model?
