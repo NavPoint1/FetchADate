@@ -520,7 +520,7 @@ body.user-show {
     text-align: center;
     vertical-align: middle;
     background-color: rgb(184, 140, 185);
-    border: 4mm ridge rgba(98, 19, 39, 0.6);
+    border: 4mm ridge rgba(98, 19, 39);
     border-radius: 150px;
 }
 
@@ -573,4 +573,12 @@ div#relationship-pic {
     text-align: center;
     background-color: rgb(184, 140, 185);
     padding: 10px;
+}
+
+
+/*gift photos*/
+
+#gift_div {
+    width: 100px;
+    position: sticky;
 }

@@ -394,13 +394,13 @@ const answer = (character, answerIndex, questionId) => {
             let goodbyeText
             if (pointValue > 0) {
                 // happy
-                goodbyeText = "Have a great day!"
+                goodbyeText = "Have a great day! 😊"
             } else if (pointValue < 0) {
                 // mad
-                goodbyeText = "mad"
+                goodbyeText = "Mad 😠"
             } else {
                 // neutral
-                goodbyeText = "Goodbye"
+                goodbyeText = "Goodbye 👋"
             }
             // render goodbye text
             goodbyePage(goodbyeText)
@@ -510,7 +510,7 @@ const renderUserShow = () => {
     let inventoryDiv = document.createElement("div")
     inventoryDiv.id = "inventory-container"
     main.append(inventoryDiv)
-    inventoryDiv.innerText = "🎁 My Gifts:"
+    inventoryDiv.innerHTML = "<div id=gift-title>🎁 My Gifts:</div>"
     currentUser.gifts.forEach(gift => {
             renderInventoryItem(gift, inventoryDiv)
         })
@@ -527,9 +527,11 @@ const renderUserShow = () => {
 }
 
 const renderInventoryItem = (gift, inventoryDiv) => {
-    let giftDiv = document.createElement("div")
+    let giftDiv = document.createElement("img")
     inventoryDiv.append(giftDiv)
-    giftDiv.innerText = gift.name
+    giftDiv.id = "gift_div"
+        // giftDiv.innerText = gift.name
+    giftDiv.src = gift.picture_url
 }
 
 const fetchGiftsIndex = (giftHeader) => {
@@ -547,7 +549,7 @@ const renderGiftItem = (gift, giftHeader) => {
     let giftDiv = document.createElement("div")
     giftHeader.append(giftDiv)
     giftDiv.innerText = gift.name
-    giftDiv.style.width = "15%"
+    giftDiv.style.width = "90%"
     let priceDiv = document.createElement('div')
     giftDiv.append(priceDiv)
     priceDiv.style.cssFloat = "right"
@@ -587,7 +589,7 @@ const handleBuyGift = (gift, giftHeader) => {
             fetchGiftsIndex(giftHeader)
                 // update DOM - display correct amount of currency
             let currencyText = document.querySelector("#currency-display").firstChild
-            currencyText.nodeValue = "Social Energy: " + currentUser.points
+            currencyText.nodeValue = "Social Energy: " + currentUser.points + "💕"
         })
 
 }
