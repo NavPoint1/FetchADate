@@ -173,7 +173,7 @@ const renderCharacterIndex = (characters) => {
     let userShowButton = document.createElement("button")
     userShowButton.id = "user-show-button"
     userShowButton.className = "ui button"
-    userShowButton.innerHTML = `<img class= "user-button-pic" src = ${currentUser.picture_url}> `
+    userShowButton.innerHTML = `<img class= "user-button-pic" src ="https://emojipedia-us.s3.dualstack.us-west-1.amazonaws.com/thumbs/320/openmoji/252/house-with-garden_1f3e1.png"> `
     navBar.append(userShowButton)
     userShowButton.addEventListener("click", fetchUserShow)
 
