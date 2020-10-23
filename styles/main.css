@@ -18,9 +18,9 @@ form#sign-up-form {
 
 .sign-up-form {
     background-color: #FFFFFF;
-    opacity: 80%;
     margin: 7em auto;
     border-radius: 1.5em;
+    background-color: rgb(255, 255, 255, .9);
     box-shadow: 0px 11px 35px 2px rgba(0, 0, 0, 0.40);
     width: 50%;
     height: 70%;
@@ -28,6 +28,14 @@ form#sign-up-form {
     top: 15%;
     padding: 10px;
     position: relative;
+}
+
+#title {
+    border-style: none;
+    position: absolute;
+    margin-top: -300px;
+    margin-left: -349px;
+    z-index: -1;
 }
 
 
@@ -100,7 +108,7 @@ input {
     letter-spacing: 1px;
     background: rgba(136, 126, 126, 0.04);
     padding: 10px 20px;
-    border: 2px solid rgba(0, 0, 0, 0.02);
+    border: 2px solid rgba(0, 0, 0, 0.2);
     text-align: center;
     margin-bottom: 27px;
     font-family: 'Ubuntu', sans-serif;
@@ -120,14 +128,14 @@ input:focus {
     cursor: pointer;
     border-radius: 5em;
     color: #fff;
-    background: linear-gradient(to right, rgb(165, 165, 170), rgb(172, 165, 165));
+    background: linear-gradient(to right, rgb(225, 225, 230), rgb(172, 165, 165));
     padding-left: 40px;
     padding-right: 40px;
     padding-bottom: 10px;
     padding-top: 10px;
     font-family: 'Ubuntu', sans-serif;
     font-size: 13px;
-    box-shadow: 0 0 20px 1px rgba(0, 0, 0);
+    box-shadow: 0 0 7px 1px rgba(0, 0, 0);
 }
 
 
@@ -158,19 +166,19 @@ input:focus {
 
 #hover-char-name {
     z-index: 1;
-    color: 9b111e;
+    color: maroon;
     position: fixed;
     left: 40%;
     width: 350px;
     top: 5%;
-    font-size: 23px;
+    font-size: 20px;
     background-color: rgba(255, 255, 255, .55);
     border-radius: 90px;
     block-size: 50px;
     text-align: center;
     vertical-align: middle;
     padding: 10px;
-    text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+    text-shadow: -1px 0 maroon, 0 1px maroon, 1px 0 maroon, 0 -1px maroon;
 }
 
 #dialogue-prompt {
@@ -582,4 +590,8 @@ div#relationship-pic {
 #gift_div {
     width: 100px;
     position: sticky;
+}
+
+img#gift_div {
+    filter: drop-shadow(2px 4px 6px black);
 }

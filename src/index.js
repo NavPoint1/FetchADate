@@ -36,7 +36,8 @@ const renderLoginForm = () => {
     let loginForm = document.createElement("form")
     formDiv.append(loginForm)
     loginForm.innerHTML =
-        `<p class="log-in-title">Sign in</p>
+        `<img id= title src= "https://i.imgur.com/GDUa6Z2.png">
+        <p class="log-in-title">Sign in</p>
         <!-- <label>User Name</label> -->
         <input placeholder="Username" type="text" id="login-name">
         <br>
