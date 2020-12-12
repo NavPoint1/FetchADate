@@ -33,7 +33,7 @@ form#sign-up-form {
 #title {
     border-style: none;
     position: absolute;
-    margin-top: -300px;
+    margin-top: -350px;
     margin-left: -349px;
     z-index: -1;
 }
@@ -61,7 +61,7 @@ body.login-page {
 
 p.log-in-title {
     padding-top: 1px;
-    color: rgb(169, 164, 172);
+    color: rgb(95, 93, 97);
     font-family: 'Ubuntu', sans-serif;
     font-weight: bold;
     font-size: 23px;
@@ -442,7 +442,9 @@ body.user-show {
 /*user profile photo*/
 
 .user-show-picture {
+    background: rgb(184, 140, 185);
     height: 150px;
+    min-width: 75px;
     border-radius: 50%;
     margin-left: 50px;
     border: 2mm ridge rgba(98, 19, 39);

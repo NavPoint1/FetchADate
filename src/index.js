@@ -1,6 +1,6 @@
-// const URL = "http://localhost:3000/"
+const URL = "http://localhost:3000/"
 
-const URL = "https://guarded-bayou-76703.herokuapp.com/"
+// const URL = "https://guarded-bayou-76703.herokuapp.com/"
 
 let body
 let main
@@ -14,7 +14,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // global variables 
     initializeGlobals();
     // start game
-    renderLoginForm();
+    // renderLoginForm();
+    renderSignUpForm();
 });
 
 const initializeGlobals = () => {
@@ -30,7 +31,10 @@ const initializeGlobals = () => {
 //////////////// LOG IN ////////////////
 
 const renderLoginForm = () => {
-    //ogin background
+
+    navBar.innerHTML = ""
+    main.innerHTML = ""
+    //login background
     body.className = "login-page"
         // login form
     let formDiv = document.createElement("div")
@@ -118,20 +122,34 @@ const handleLogOut = () => {
 }
 
 const renderSignUpForm = (event) => {
+    body.className = "login-page"
+
     navBar.innerHTML = ""
         // clear login form + build signup form 
-    main.innerHTML = `<div class="sign-up-form"><form id="sign-up-form">
-        <input placeholder="Username" type="text" id="login-name">
-        <br>
-        <input placeholder="Password" type="password" id="login-password">
-        <br>
-        <input placeholder="Picture URL" type="text" id="user-picture">
-        <br>
-        <button id="sign-up-button" class="ui button">Sign Up</button>
+    main.innerHTML = `<div class="sign-up-form">
+        <form id="sign-up-form">
+            <img id= title src="https://i.imgur.com/GDUa6Z2.png">
+            <p class="log-in-title">New Game!</p>
+            <br>
+            <input placeholder="What's your name?" type="text" id="login-name">
+            <br>
+            <input placeholder="Enter a simple password!" type="password" id="login-password">
+            <br>
+            <input placeholder="Paste a link to an avatar picture here! (Optional)" type="text" id="user-picture">
+            <br>
+            <button id="sign-up-button" class="ui button">Sign Up</button>
         </form></div>`
         // eventListener for submit --> handleSignup 
     let signUpForm = document.querySelector("#sign-up-form")
     signUpForm.addEventListener("submit", handleSignUp)
+
+    // login button
+    let loginButton = document.createElement("button")
+    loginButton.innerHTML = "Log In"
+    loginButton.id = "sign-up-button"
+    loginButton.className = "ui button"
+    navBar.append(loginButton)
+    loginButton.addEventListener("click", renderLoginForm)
 }
 
 const handleSignUp = (event) => {
@@ -398,7 +416,7 @@ const answer = (character, answerIndex, questionId) => {
         .then(response => response.json())
         .then(pointValue => {
             // display happy goodbye text/bad goodbye text
-            let goodbyeHappy = ["😊 Have a great day!", `Bye ${currentUser.name}`, `See you tomorrow ${currentUser.name}!`]
+            let goodbyeHappy = ["😊 Have a great day!", `Bye ${currentUser.name}! See you!`, `See you tomorrow ${currentUser.name}!`]
             let goodbyeNeutral = ["Goodbye 👋", "Bye.", "See you later.", "Have a good one.", "See ya."]
             let goodbyeMad = ["What?", "Uh okay.", "Yeah bye.", "Ight Imma head out.", "K bye 😠"]
             let goodbyeText
