@@ -2,9 +2,9 @@
 
 Fetch A Date is a fun interactive game where you build relationships through dialog with a variety of characters. 
 
-    Based on your interactions with the characters your relationship with them will grow or suffer. Characters will respond differently to you based on your relationship with them. When you visit your home, you can see your **relationship level** with all the characters you have met. 
+  Based on your interactions with the characters your relationship with them will grow or suffer. Characters will respond differently to you based on your relationship with them. When you visit your home, you can see your **relationship level** with all the characters you have met. 
 
-    Additionally you will gain or lose Social Energy based on your interactions with the characters. The **Social Energy** can be spent to buy gifts, to then give to each character. Each character has a different favorite gift, which you can discover by getting to know them! 
+Additionally you will gain or lose Social Energy based on your interactions with the characters. The **Social Energy** can be spent to buy gifts, to then give to each character. Each character has a different favorite gift, which you can discover by getting to know them! 
 
 # How to play
 
