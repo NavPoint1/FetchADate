@@ -20,5 +20,5 @@ At home you can view your relationships and spend your Social Energy to buy rare
 
 This was made by Mark Foley and Giulia Cajati using a vanilla JavaScript front end and Ruby on Rails back end. The front end is hosted on GitHub and the back end API is hosted on Heroku. 
 
-Mark’s GitHub: https://github.com/NavPoint1
+Mark’s GitHub: https://github.com/NavPoint1  
 Giulia’s GitHub: https://github.com/GiuliaCajati
