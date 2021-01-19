@@ -16,6 +16,8 @@ Click on your house on the top left corner of the city center screen to go home,
 
 At home you can view your relationships and spend your Social Energy to buy rare and exotic gifts for the characters.  
 
+# Ready to Play: https://navpoint1.github.io/FetchADate/
+
 # About the Creators
 
 This was made by Mark Foley and Giulia Cajati using a vanilla JavaScript front end and Ruby on Rails back end. The front end is hosted on GitHub and the back end API is hosted on Heroku. 
